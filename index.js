@@ -1,20 +1,23 @@
 const ArgParser = require("./src/argParser.class");
 
-console.log(`Instanciation ArgParser`);
-const x = new ArgParser();
+// console.log(`Instanciation ArgParser`);
+const argPars = new ArgParser();
 
 // console.log(`x.args : ${x.args}`);
-x.addOption("h", "help", "print help");
-x.addOption("v", "version", "Give version ");
-// x.parse();
-// x.options.forEach((val, ind) => {
+argPars.addOption("h", "help", "print help");
+argPars.addOption("v", "version", "Give acrtual version of the module");
+argPars.addOption("t", "test", "Speciale test");
+argPars.parse();
+// argPars.options.forEach((val, ind) => {
 //     console.log(`val ${ind}`);
 //     console.log(val);
     
 // });
-// x.parse();
-for (const y of x.options) {
-    console.log(`x.opts forof : ${y}`);
-    console.log(y);
-}
-x.help();
+// argPars.parse();
+// for (const y of argPars.options) {
+//     console.log(`x.opts forof : ${y}`);
+//     console.log(y);
+// }
+// argPars.help();
+
+// module.exports = ArgParser;
