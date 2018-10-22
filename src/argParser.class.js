@@ -8,9 +8,8 @@ const {
     constants: {
         R_OK
     } } = require("fs");
-
 const { parse, join } = require("path");
-
+ 
 // Require Third-party dependencies
 const is = require("@slimio/is");
 // const { read } = require("@slimio/utils");
@@ -21,16 +20,24 @@ const is = require("@slimio/is");
 class ArgParser {
 
     /**
-     * @constructor
+     * @constructs ArgParser
      */
     constructor() {
-        /** @type {String[]} */
+        /** Arguments passed in command line
+         * @type {String[]}
+         * @memberof ArgParser#
+         * */
         this.args = process.argv.slice(2);
-        /** @type {Array} */
+        /** Array of options added to an addon with addOption() function.
+         * Every options added to an addon refers to an argument action
+         * @type {Array<T>}
+         */
         this.options = [];
-        const { dir } = parse(__dirname);
-        console.log(__dirname);
 
+        const { dir } = parse(__dirname);
+        /** path to Package.json
+         * @type {String}
+         */
         this.packageJsonPath = join(dir, "package.json");
 
         // associer les noms des methodes avec les noms des options déclarés
@@ -38,6 +45,7 @@ class ArgParser {
 
     /** Verify if arguments passed in command line are executable
      * @return {void}
+     * @throws {Error}
      */
     parse() {
         // parser les arguments en ligne de commande et les confrontés avec la liste des options définies
@@ -45,8 +53,7 @@ class ArgParser {
             return;
         }
         if (this.options.length === 0) {
-            const errorMess = "There is no options, you have to add option with addOption() method befor using parse() methode";
-            throw new Error(errorMess);
+            throw new Error("There is no options, you have to add option with addOption() method befor using parse() methode");
         }
         // console.log(this.args);
         // permet de retirer les tirets des arguments
@@ -54,11 +61,11 @@ class ArgParser {
             // console.log(val);
             let result = "";
             if (/^-{2}/g.test(val)) {
-                // console.log("il y a deux tirets ");
+                // console.log("il y a deux tirets");
                 result = val.slice(2);
             }
             if (/^-[^-]/g.test(val)) {
-                // console.log("il y a un tirets ");
+                // console.log("il y a un tirets");
                 result = val.slice(1);
             }
 
@@ -84,7 +91,7 @@ class ArgParser {
                     this.help();
                     break;
                 default:
-                    break;
+                    throw new Error("");
             }
         }
     }
@@ -96,6 +103,7 @@ class ArgParser {
      * @param {String} name name of argument must
      * @param {String} description description of what the argument provide
      * @returns {void}
+     * @throws {TypeError}
      */
     addOption(shortcut, name, description) {
         // Manage Errors
@@ -111,41 +119,39 @@ class ArgParser {
         this.options.push({ shortcut, name, description });
     }
 
-    /** displays information about all the arguments that the module takes in the console
+    /** displays informations about the addon and all the arguments that the addon can take in the console
      * @function help
      * @return {Promise}
     */
     async help() {
-        const pathFile = "./package.json";
-        await access(pathFile, R_OK);
-        const data = await readFile(pathFile, { encoding: "utf8" });
+        // read the package.json to get name of addon and his description & print it
+        await access(this.packageJsonPath, R_OK);
+        const data = await readFile(this.packageJsonPath, { encoding: "utf8" });
         const { name, description } = JSON.parse(data);
         console.log(`Usage: ${name} [option]\n\n${description}\n\noptions:`);
+
         let maxLengthName = 0;
-        this.options.map((opt) => maxLengthName = maxLengthName < opt.name.length ? opt.name.length : maxLengthName);
+        // browse table to get max lenth of name option to deduce number of white space
+        for (const option of this.options) {
+            if (maxLengthName < option.name.length) {
+                maxLengthName = option.name.length;
+            }
+        }
+        // print every option on terminal
         for (const option of this.options) {
             const whiteSpace = " ".repeat(maxLengthName - option.name.length);
             console.log(`\t-${option.shortcut}, --${option.name} ${whiteSpace} ${option.description}`);
         }
-        /*
-        readFile("./package.json", (err, data) => {
-            if (err) throw new Error(err)
-            const { name, description } = JSON.parse(data);
-            console.log(`Usage: ${name} [option]\n\n${description}\n\noptions:`);
-            let maxLengthName = 0;
-            this.options.map(opt => maxLengthName = (maxLengthName < opt.name.length) ? opt.name.length : maxLengthName)
-            for (const option of this.options) {
-                const whiteSpace = " ".repeat(maxLengthName - option.name.length);
-                console.log(`\t-${option.shortcut}, --${option.name} ${whiteSpace} ${option.description}`);
-            }
-        });
-        */
     }
+
     /** Give the actual version of the addon
      * @returns {void}
      */
-    version() {
-        // console.log(this)
+    async version() {
+        await access(this.packageJsonPath, R_OK);
+        const data = await readFile(this.packageJsonPath, { encoding: "utf8" });
+        const { version } = JSON.parse(data);
+        console.log(`v${version}`);
     }
 }
 
