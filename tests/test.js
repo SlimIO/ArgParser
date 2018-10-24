@@ -4,9 +4,32 @@
 
 // Require internal Dependenties
 const ArgParser = require("../src/argParser.class");
-
+const optTest = {
+    description: "Speciale test String",
+    defaultVal: "SpecialVal",
+    shortcut: "s"
+};
+const optTest2 = {
+    description: "Speciale test Number",
+    defaultVal: 10,
+    shortcut: "n"
+};
+const optTest2Bis = {
+    description: "ccwxcwxcwxc",
+    defaultVal: 1542,
+    shortcut: "n"
+};
+const optTest3 = {
+    description: "Speciale test boolean",
+    defaultVal: true,
+    shortcut: "b"
+};
 const argPars = new ArgParser();
-argPars.addCommand("h", "help", "print help");
-argPars.addCommand("v", "version", "Give acrtual version of the module");
-argPars.addCommand("t", "test", "Speciale test");
+argPars.addCommand("test1", optTest);
+argPars.addCommand("test2", optTest2);
+argPars.addCommand("test2bis", optTest2Bis);
+argPars.addCommand("test3", optTest3);
+// argPars.addCommand("h", "help", "print help");
+// argPars.addCommand("v", "version", "Give acrtual version of the module");
+// argPars.addCommand("t", "test", "Speciale test");
 console.log(argPars.parse());

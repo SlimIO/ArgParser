@@ -17,8 +17,8 @@ const is = require("@slimio/is");
  * @classdesc Parse arguments in command line for SlimIO projects
  *
  * @property {String[]} args Arguments passed in command line
- * @property {Object[]} commands Command Object
- * @property {Object} parsedArgs OBject represent arguments passed in command line parsed
+ * @property {Object[]} commands list of command define by developper
+ * @property {Object} parsedArgs OBject represent parsed arguments command line
  * @property {String} packagePath Path to Package.json
  *
  * @version 0.1.0
@@ -36,26 +36,49 @@ class ArgParser {
     }
 
     /**
-     * add commands with a name, shortcut [description] that will be used as comparisons with the arguments inserted in the command line
-     * the name of the argument must match with the name of the associated function
-     * @param {String} shortcut shortcut of argument
-     * @param {String} name name of argument must
-     * @param {String} description description of what the argument provide
+     * add commands
+     * @param {!String} name name of command
+     * @param {Object} options Object represent
+     * @param {String} options.description description of what the argument provide
+     * @param {String|Number|Boolean} options.defaultVal defalt value of the command
+     * @param {String=} options.shortcut shortcut of argument
      * @returns {void}
      * @throws {TypeError}
      */
-    addCommand(shortcut, name, description) {
+    addCommand(name, options) {
         // Manage Errors
-        if (!is.string(shortcut)) {
-            throw new TypeError("shortcut param must be a string");
+        if (is.nullOrUndefined(name)) {
+            throw new Error("you must name your command");
         }
         if (!is.string(name)) {
             throw new TypeError("name param must be a string");
         }
-        if (!is.string(description) && is.nullOrUndefined(description)) {
+        if (!is.string(options.shortcut)) {
+            throw new TypeError("shortcut param must be a string");
+        }
+        if (!is.string(options.description) && is.nullOrUndefined(options.description)) {
             throw new TypeError("description param must be a string");
         }
-        this.commands.push({ shortcut, name, description });
+        // check existance of duplicate name or shortcut
+        if (this.commands.length > 0) {
+            for (const command of this.commands) {
+                if (command.name === name) {
+                    const error = `The name ${name} already exist`;
+                    throw new Error(error);
+                }
+                console.log(`command: ${command.shortcut} - option: ${options.shortcut}\n|condition: ${!is.nullOrUndefined(options.shortcut) && command.shortcut === options.shortcut}`);
+                if (!is.nullOrUndefined(options.shortcut) && command.shortcut === options.shortcut) {
+                    const error = `The shortcut ${command.shortcut} already exist`;
+                    throw new Error(error);
+                }
+            }
+            console.log("\n\n");
+            
+        }
+        
+        // { shortcut, name, description }
+        options.name = name;
+        this.commands.push(options);
     }
 
     /** Parse and verify if arguments passed in command line are executable
