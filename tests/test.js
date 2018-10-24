@@ -6,7 +6,8 @@
 const ArgParser = require("../src/argParser.class");
 
 const argPars = new ArgParser();
-argPars.addOption("h", "help", "print help");
-argPars.addOption("v", "version", "Give acrtual version of the module");
-argPars.addOption("t", "test", "Speciale test");
-argPars.parse();
+argPars.addCommand("h", "help", "print help");
+argPars.addCommand("v", "version", "Give acrtual version of the module");
+argPars.addCommand("t", "test", "Speciale test");
+console.log( argPars.parse() );
+

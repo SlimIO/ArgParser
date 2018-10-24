@@ -1,4 +1,3 @@
-
 // Require Node.JS dependencies
 const {
     promises: {
@@ -9,95 +8,35 @@ const {
         R_OK
     } } = require("fs");
 const { parse, join } = require("path");
- 
+
 // Require Third-party dependencies
 const is = require("@slimio/is");
-// const { read } = require("@slimio/utils");
 
 /**
  * @class ArgParser
+ * @classdesc Parse arguments in command line for SlimIO projects
+ *
+ * @property {String[]} args Arguments passed in command line
+ * @property {Object[]} commands Command Object
+ * @property {Object} parsedArgs OBject represent arguments passed in command line parsed
+ * @property {String} packagePath Path to Package.json
+ *
+ * @version 0.1.0
  */
 class ArgParser {
-
     /**
      * @constructs ArgParser
      */
     constructor() {
-        /** Arguments passed in command line
-         * @type {String[]}
-         * @memberof ArgParser#
-         * */
         this.args = process.argv.slice(2);
-        /** Array of options added to an addon with addOption() function.
-         * Every options added to an addon refers to an argument action
-         * @type {Array<T>}
-         */
-        this.options = [];
-
+        this.commands = [];
+        this.parsedArgs = {};
         const { dir } = parse(__dirname);
-        /** path to Package.json
-         * @type {String}
-         */
-        this.packageJsonPath = join(dir, "package.json");
-
-        // associer les noms des methodes avec les noms des options déclarés
-    }
-
-    /** Verify if arguments passed in command line are executable
-     * @return {void}
-     * @throws {Error}
-     */
-    parse() {
-        // parser les arguments en ligne de commande et les confrontés avec la liste des options définies
-        if (this.args.length === 0) {
-            return;
-        }
-        if (this.options.length === 0) {
-            throw new Error("There is no options, you have to add option with addOption() method befor using parse() methode");
-        }
-        // console.log(this.args);
-        // permet de retirer les tirets des arguments
-        this.args = this.args.map((val) => {
-            // console.log(val);
-            let result = "";
-            if (/^-{2}/g.test(val)) {
-                // console.log("il y a deux tirets");
-                result = val.slice(2);
-            }
-            if (/^-[^-]/g.test(val)) {
-                // console.log("il y a un tirets");
-                result = val.slice(1);
-            }
-
-            return result;
-        });
-        // await read(this.packageJsonPath)
-        // const myvar = await this.readPackageJson();
-        // console.log(`Myvar: ${JSON.stringify(myvar)}`);
-
-        for (const argument of this.args) {
-            // console.log(argument);
-            switch (argument) {
-                case "t":
-                case "test":
-                    this.test();
-                    break;
-                case "v":
-                case "version":
-                    this.version();
-                    break;
-                case "h":
-                case "help":
-                    this.help();
-                    break;
-                default:
-                    throw new Error("");
-            }
-        }
+        this.packagePath = join(dir, "package.json");
     }
 
     /**
-     * add options with a name, shortcut [description] that will be used as comparisons with the arguments inserted in the command line
+     * add commands with a name, shortcut [description] that will be used as comparisons with the arguments inserted in the command line
      * the name of the argument must match with the name of the associated function
      * @param {String} shortcut shortcut of argument
      * @param {String} name name of argument must
@@ -105,7 +44,7 @@ class ArgParser {
      * @returns {void}
      * @throws {TypeError}
      */
-    addOption(shortcut, name, description) {
+    addCommand(shortcut, name, description) {
         // Manage Errors
         if (!is.string(shortcut)) {
             throw new TypeError("shortcut param must be a string");
@@ -116,7 +55,59 @@ class ArgParser {
         if (!is.string(description) && is.nullOrUndefined(description)) {
             throw new TypeError("description param must be a string");
         }
-        this.options.push({ shortcut, name, description });
+        this.commands.push({ shortcut, name, description });
+    }
+
+    /** Parse and verify if arguments passed in command line are executable
+     * @returns {Object} Object represent all arguments parsed
+     * @throws {Error}
+     */
+    parse() {
+        let index = 0;
+        const parsedArgs = Object.create(null);
+        let currentCmd;
+        let values = [];
+        let value = null;
+        // parser les arguments en ligne de commande et les confrontés avec la liste des commandes définies
+        if (this.args.length === 0) {
+            return;
+        }
+        if (this.commands.length === 0) {
+            throw new Error("There is no commands, you have to add option with addCommands() method befor using parse() methode");
+        }
+
+        for (const argument of this.args) {
+            
+            console.log(`---------- DEBUT de la boucle N ${index} ----------`);
+            // Si l'argument commence par deux tiret on push la valeur dans l'array
+            // properties afain de créer le futur objet this.parsedArgs
+            if (/^-{2}/g.test(argument)) {
+                // Remise a zero des variables values et values lorsqu'on tombe sur une commande "--"
+                // Mise en mémoire de la nouvelle commande rencontrée
+                value = null;
+                values = [];
+                currentCmd = argument.slice(2);
+            }
+            // else if si on trouve un alias + aller chercher a quel nom de commande correspond l'alias
+            else {
+                if (!value === null) {
+                    values.push(argument);
+                    parsedArgs[currentCmd] = values;
+                }
+                else {
+                    value = argument;
+                    values.push(value);
+                    parsedArgs[currentCmd] = value;
+                }
+                console.log();
+                
+            }
+
+            console.log(`---------- FIN de la boucle N ${index} ----------\n\n`);
+            index++;
+        }
+
+        return parsedArgs;
     }
 
     /** displays informations about the addon and all the arguments that the addon can take in the console
