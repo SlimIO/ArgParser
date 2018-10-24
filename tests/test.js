@@ -9,5 +9,4 @@ const argPars = new ArgParser();
 argPars.addCommand("h", "help", "print help");
 argPars.addCommand("v", "version", "Give acrtual version of the module");
 argPars.addCommand("t", "test", "Speciale test");
-console.log( argPars.parse() );
-
+console.log(argPars.parse());

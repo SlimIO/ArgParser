@@ -63,11 +63,11 @@ class ArgParser {
      * @throws {Error}
      */
     parse() {
-        let index = 0;
         const parsedArgs = Object.create(null);
         let currentCmd;
         let values = [];
         let value = null;
+        let prevArgCommand = false;
         // parser les arguments en ligne de commande et les confrontés avec la liste des commandes définies
         if (this.args.length === 0) {
             return;
@@ -76,35 +76,41 @@ class ArgParser {
             throw new Error("There is no commands, you have to add option with addCommands() method befor using parse() methode");
         }
 
-        for (const argument of this.args) {
-            
-            console.log(`---------- DEBUT de la boucle N ${index} ----------`);
+        for (const argvArgument of this.args) {
             // Si l'argument commence par deux tiret on push la valeur dans l'array
             // properties afain de créer le futur objet this.parsedArgs
-            if (/^-{2}/g.test(argument)) {
+            if (/^-{2}/g.test(argvArgument)) {
                 // Remise a zero des variables values et values lorsqu'on tombe sur une commande "--"
                 // Mise en mémoire de la nouvelle commande rencontrée
                 value = null;
                 values = [];
-                currentCmd = argument.slice(2);
+                if (!prevArgCommand) {
+                    currentCmd = argvArgument.slice(2);
+                    prevArgCommand = true;
+                }
+                else {
+                    Reflect.set(parsedArgs, argvArgument.slice(2), true);
+                }
+                
             }
             // else if si on trouve un alias + aller chercher a quel nom de commande correspond l'alias
             else {
-                if (!value === null) {
-                    values.push(argument);
-                    parsedArgs[currentCmd] = values;
+                // On rentre ici uniquement si la valeur de argvArgument ne possède pas de tirets
+                // On traite donc ici les arguments des commandes
+                // il faut donc spécifié pour la prochaine itération que l'argument précedent n'est pas une commande
+                prevArgCommand = false;
+                // for the first argument of a command
+                if (value === null) {
+                    value = argvArgument;
+                    values.push(value);
+                    Reflect.set(parsedArgs, currentCmd, value);
                 }
                 else {
-                    value = argument;
+                    // if there is severals argument for one command
                     values.push(value);
-                    parsedArgs[currentCmd] = value;
+                    Reflect.set(parsedArgs, currentCmd, values);
                 }
-                console.log();
-                
             }
-
-            console.log(`---------- FIN de la boucle N ${index} ----------\n\n`);
-            index++;
         }
 
         return parsedArgs;
