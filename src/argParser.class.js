@@ -104,7 +104,7 @@ class ArgParser {
                 // si l'argument precedent ne fut pas une commande
                 // ce qui signifie que la commande ne possedais pas d'arguments, on la passe donc a true
                 if (!prevArgCommand) {
-                    currentCmd = /^-{2}/g.test(argvArgument) ? argvArgument.slice(2) : argvArgument.slice(1);
+                    currentCmd = /^-{2}/g.test(argvArgument) ? argvArgument.slice(2) : argvArgument;
                     prevArgCommand = true;
                 }
                 else { 
@@ -143,19 +143,31 @@ class ArgParser {
     execute() {
         // vérifier si la validité des commandes contenu dans l'obj parsed arg
         for (const key of Object.keys(this.parsedArgs)) {
-            console.log(`${key} - ${this.parsedArgs[key]}`);
-            let isEqual = false;
+            console.log(`\n${key} - ${this.parsedArgs[key]}`);
+            // console.log(`${this.commands}`); Array of obj command
+            const sameNames = [];
+            let correctTypes = false;
             for (const command of this.commands) {
-                console.log(`\tcommand : ${command.name}`);
-                if (key === command.name) isEqual = true;
+                // console.log(`\tcommand : ${command.name}`);
+                // console.log(command);
+                // console.log(typeof command.defaultVal);
+                // console.log(typeof this.parsedArgs[key]);
+                const typeDefaultVal = typeof command.defaultVal;
+                const typePasedArg = typeof this.parsedArgs[key];
+                correctTypes = typeDefaultVal === typePasedArg;
+                // console.log(correctTypes);
+                console.log(key === command.name);
+                sameNames.push(key === command.name);
             }
-            if (!isEqual) {
-                const error = `Command "${key}" not found`;
-                throw Error(error);
+            console.log("");
+            const isFinded = sameNames.find((val) => val === true);
+            if (!isFinded) {
+                const error = `commande ${key} not fount`;
+                throw new Error(error);
             }
         }
-        
         // vérifier le type des arguments des commandes (defaltVal)
+
     }
 
     /** displays informations about the addon and all the arguments that the addon can take in the console
