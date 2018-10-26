@@ -1,7 +1,7 @@
 // Require Node.JS dependencies
 const {
     promises: { readFile, access },
-    constants: { R_OK } 
+    constants: { R_OK }
 } = require("fs");
 const { parse, join } = require("path");
 
@@ -93,7 +93,6 @@ class ArgParser {
         if (this.commands.length === 0) {
             throw new Error("There is no commands, you have to add option with addCommands() method befor using parse() methode");
         }
-
         for (const argvArgument of argv) {
             // Si l'argument commence par deux tiret on push la valeur dans l'array
             // properties afain de créer le futur objet this.parsedArgs
@@ -132,6 +131,31 @@ class ArgParser {
         }
 
         return this.parsedArgs;
+    }
+
+    /** Execute fonctions associated to commands
+     * @method execute
+     * @param {Object} [parsedArgs = this.parsedArgs] OBject represent parsed arguments command line
+     * @throws {Error}
+     *
+     * @return {void}
+     */
+    execute() {
+        // vérifier si la validité des commandes contenu dans l'obj parsed arg
+        for (const key of Object.keys(this.parsedArgs)) {
+            console.log(`${key} - ${this.parsedArgs[key]}`);
+            let isEqual = false;
+            for (const command of this.commands) {
+                console.log(`\tcommand : ${command.name}`);
+                if (key === command.name) isEqual = true;
+            }
+            if (!isEqual) {
+                const error = `Command "${key}" not found`;
+                throw Error(error);
+            }
+        }
+        
+        // vérifier le type des arguments des commandes (defaltVal)
     }
 
     /** displays informations about the addon and all the arguments that the addon can take in the console

@@ -26,15 +26,18 @@ const optTest3 = {
 };
 const argPars = new ArgParser("0.1.0");
 argPars.addCommand("test1", optTest);
-argPars.addCommand("test2", optTest2);
+argPars.addCommand("hello", optTest2);
 // argPars.addCommand("test2bis", optTest2Bis);
 argPars.addCommand("test3", optTest3);
 // argPars.addCommand("h", "help", "print help");
 // argPars.addCommand("v", "version", "Give acrtual version of the module");
 // argPars.addCommand("t", "test", "Speciale test");
-console.log(argPars.parse());
+const parsedArg = argPars.parse();
+console.log(parsedArg);
+
+// console.log(argPars.parse());
 
 // argPars.help();
 // argPars.getVersion();
 
-console.log();
+argPars.execute();

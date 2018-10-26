@@ -25,8 +25,8 @@ console.log(obj);
 */
 
 const obj = { test: 10, foo: "barr", loulou: "piquet" };
-const arr = [10, 20];
 
-
-Reflect.set(obj, "test", arr);
-console.log(obj);
+for (const key of Object.keys(obj)) {
+    
+    console.log(key);
+}
