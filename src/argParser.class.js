@@ -96,7 +96,7 @@ class ArgParser {
         for (const argvArgument of argv) {
             // Si l'argument commence par deux tiret on push la valeur dans l'array
             // properties afain de créer le futur objet this.parsedArgs
-            if (/^-{2}/g.test(argvArgument) || /^-{1}/g.test(argvArgument)) {
+            if (/^-{1,2}/g.test(argvArgument)) {
                 // Remise a zero des variables values et values lorsqu'on tombe sur une commande "--"
                 // Mise en mémoire de la nouvelle commande rencontrée
                 value = null;
@@ -107,7 +107,7 @@ class ArgParser {
                     currentCmd = /^-{2}/g.test(argvArgument) ? argvArgument.slice(2) : argvArgument;
                     prevArgCommand = true;
                 }
-                else { 
+                else {
                     Reflect.set(this.parsedArgs, argvArgument.slice(2), true);
                 }
             }
@@ -151,14 +151,18 @@ class ArgParser {
             const atLeastOneTrue = [];
             let correctTypes = false;
             for (const command of this.commands) {
-                // console.log(`\tcommand : ${command.name}`);
+                console.log(`${command.name} - ${typeof command.defaultVal}|${typeof this.parsedArgs[key]}`);
                 // console.log(command);
                 // console.log(typeof command.defaultVal);
                 // console.log(typeof this.parsedArgs[key]);
                 const typeDefaultVal = typeof command.defaultVal;
                 const typePasedArg = typeof this.parsedArgs[key];
                 correctTypes = typeDefaultVal === typePasedArg;
-                // HERRE verify correct type afeter cast 
+                // Verify correct type of arguments comparing to the defaultVal
+                if (command.name === key && !correctTypes) {
+                    const error = `${key}'s argument is a ${typeof this.parsedArgs[key]} should be a ${typeof command.defaultVal}`;
+                    throw new Error(error);
+                }
                 console.log(correctTypes);
                 // console.log(key === command.name);
                 atLeastOneTrue.push(key === command.name);
@@ -170,8 +174,7 @@ class ArgParser {
                 throw new Error(error);
             }
         }
-        // vérifier le type des arguments des commandes (defaltVal)
-
+        // vérifier le type des arguments des commandes (defaultVal)
     }
 
     /** displays informations about the addon and all the arguments that the addon can take in the console
