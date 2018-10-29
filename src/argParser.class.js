@@ -116,15 +116,18 @@ class ArgParser {
                 // On traite donc ici les arguments des commandes
                 // il faut donc spécifié pour la prochaine itération que l'argument précedent n'est pas une commande
                 prevArgCommand = false;
+                // Verify if argument is a number
+                const isNumber = !isNaN(Number(argvArgument));
                 // for the first argument of a command
                 if (value === null) {
-                    value = argvArgument;
+                    value = isNumber ? Number(argvArgument) : argvArgument;
                     values.push(value);
                     Reflect.set(this.parsedArgs, currentCmd, value);
                 }
                 else {
                     // if there is severals argument for one command
-                    values.push(argvArgument);
+                    value = isNumber ? Number(argvArgument) : argvArgument;
+                    values.push(value);
                     Reflect.set(this.parsedArgs, currentCmd, values);
                 }
             }
@@ -135,17 +138,17 @@ class ArgParser {
 
     /** Execute fonctions associated to commands
      * @method execute
-     * @param {Object} [parsedArgs = this.parsedArgs] OBject represent parsed arguments command line
+     * @param {Object} [parsedArgs = this.parsedArgs] Object represent parsed arguments command line
      * @throws {Error}
      *
      * @return {void}
      */
     execute() {
-        // vérifier si la validité des commandes contenu dans l'obj parsed arg
+        // vérifier la validité des commandes contenu dans l'obj parsedArgs
         for (const key of Object.keys(this.parsedArgs)) {
             console.log(`\n${key} - ${this.parsedArgs[key]}`);
             // console.log(`${this.commands}`); Array of obj command
-            const sameNames = [];
+            const atLeastOneTrue = [];
             let correctTypes = false;
             for (const command of this.commands) {
                 // console.log(`\tcommand : ${command.name}`);
@@ -155,14 +158,15 @@ class ArgParser {
                 const typeDefaultVal = typeof command.defaultVal;
                 const typePasedArg = typeof this.parsedArgs[key];
                 correctTypes = typeDefaultVal === typePasedArg;
-                // console.log(correctTypes);
-                console.log(key === command.name);
-                sameNames.push(key === command.name);
+                // HERRE verify correct type afeter cast 
+                console.log(correctTypes);
+                // console.log(key === command.name);
+                atLeastOneTrue.push(key === command.name);
             }
             console.log("");
-            const isFinded = sameNames.find((val) => val === true);
+            const isFinded = atLeastOneTrue.find((val) => val === true);
             if (!isFinded) {
-                const error = `commande ${key} not fount`;
+                const error = `commande "${key}" does not exist`;
                 throw new Error(error);
             }
         }
