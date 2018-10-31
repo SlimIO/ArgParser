@@ -42,11 +42,48 @@ const y = arr.find((val) => val === true);
     }else{
         console.log("Il n'y a aucune valeur a true");
     }
-*/
+-----------------------------------------------------------------------------
 const numberStr = "10";
 const trueString = "truString";
-
 console.log(Number("10"));
-
 const isNumber = isNaN(Number("10"));
 console.log(isNumber);
+-----------------------------------------------------------------------------
+const arr = [1, 2, 3, 4];
+const arr1 = [6, 7];
+arr.push(arr1);
+console.log(arr);
+-----------------------------------------------------------------------------
+*/
+const ret = new Map();
+let currCmd = null;
+let values = [];
+
+const writeArguments = (x) => {
+    
+    currCmd = null;
+}
+
+for (const arg of process.argv.slice(2)) {
+    if (/^-{1,2}/.test(arg)) {
+        if (currCmd !== null) {
+            writeArguments(arg);
+        }
+        currCmd = arg.replace(/-/g, "");
+
+    }
+    else {
+        values.push(arg);
+    }
+}
+console.log(values);
+/*
+-----------------------------------------------------------------------------
+const currCmd = "--version";
+if (currCmd) {
+    console.log("not nll");
+}
+else {
+    console.log("null");
+}
+*/

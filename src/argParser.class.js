@@ -84,8 +84,6 @@ class ArgParser {
     parse(argv = process.argv.slice(2)) {
         let currentCmd;
         let values = [];
-        let value = null;
-        let prevArgCommand = false;
         // parser les arguments en ligne de commande et les confrontés avec la liste des commandes définies
         if (argv.length === 0) {
             return void 0;
@@ -94,42 +92,33 @@ class ArgParser {
             throw new Error("There is no commands, you have to add option with addCommands() method befor using parse() methode");
         }
         for (const argvArgument of argv) {
-            // Si l'argument commence par deux tiret on push la valeur dans l'array
-            // properties afain de créer le futur objet this.parsedArgs
+            // Si l'argument commence par deux tiret
             if (/^-{1,2}/g.test(argvArgument)) {
+                if (currentCmd) {
+                    Reflect.set(this.parsedArgs, currentCmd, true);
+                }
                 // Remise a zero des variables values et values lorsqu'on tombe sur une commande "--"
                 // Mise en mémoire de la nouvelle commande rencontrée
-                value = null;
                 values = [];
                 // si l'argument precedent ne fut pas une commande
-                // ce qui signifie que la commande ne possedais pas d'arguments, on la passe donc a true
-                if (!prevArgCommand) {
-                    currentCmd = /^-{2}/g.test(argvArgument) ? argvArgument.slice(2) : argvArgument;
-                    prevArgCommand = true;
-                }
-                else {
-                    Reflect.set(this.parsedArgs, argvArgument.slice(2), true);
-                }
+                // ce qui signifie que la commande ne possedait pas d'arguments, on la passe donc a true
+                currentCmd = /^-{2}/g.test(argvArgument) ? argvArgument.slice(2) : argvArgument;
             }
             else {
                 // On rentre ici uniquement si la valeur de argvArgument ne possède pas de tirets
                 // On traite donc ici les arguments des commandes
-                // il faut donc spécifié pour la prochaine itération que l'argument précedent n'est pas une commande
-                prevArgCommand = false;
                 // Verify if argument is a number
                 const isNumber = !isNaN(Number(argvArgument));
+                values.push(isNumber ? Number(argvArgument) : argvArgument);
                 // for the first argument of a command
-                if (value === null) {
-                    value = isNumber ? Number(argvArgument) : argvArgument;
-                    values.push(value);
-                    Reflect.set(this.parsedArgs, currentCmd, value);
+                if (values.length <= 1) {
+                    Reflect.set(this.parsedArgs, currentCmd, values[0]);
                 }
                 else {
                     // if there is severals argument for one command
-                    value = isNumber ? Number(argvArgument) : argvArgument;
-                    values.push(value);
                     Reflect.set(this.parsedArgs, currentCmd, values);
                 }
+                currentCmd = null;
             }
         }
 
@@ -151,10 +140,7 @@ class ArgParser {
             const atLeastOneTrue = [];
             let correctTypes = false;
             for (const command of this.commands) {
-                console.log(`${command.name} - ${typeof command.defaultVal}|${typeof this.parsedArgs[key]}`);
-                // console.log(command);
-                // console.log(typeof command.defaultVal);
-                // console.log(typeof this.parsedArgs[key]);
+                // console.log(`${command.name} - ${typeof command.defaultVal}|${typeof this.parsedArgs[key]}`);
                 const typeDefaultVal = typeof command.defaultVal;
                 const typePasedArg = typeof this.parsedArgs[key];
                 correctTypes = typeDefaultVal === typePasedArg;
@@ -163,18 +149,19 @@ class ArgParser {
                     const error = `${key}'s argument is a ${typeof this.parsedArgs[key]} should be a ${typeof command.defaultVal}`;
                     throw new Error(error);
                 }
-                console.log(correctTypes);
+                // console.log(correctTypes);
                 // console.log(key === command.name);
+                // Verify if there is at least one command write on command line
+                // which match with command added with addCommand method
                 atLeastOneTrue.push(key === command.name);
             }
-            console.log("");
             const isFinded = atLeastOneTrue.find((val) => val === true);
             if (!isFinded) {
                 const error = `commande "${key}" does not exist`;
                 throw new Error(error);
             }
         }
-        // vérifier le type des arguments des commandes (defaultVal)
+        // Execute callBack
     }
 
     /** displays informations about the addon and all the arguments that the addon can take in the console

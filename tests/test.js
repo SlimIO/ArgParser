@@ -9,12 +9,12 @@ const version = {
     defaultVal: "SpecialVal",
     shortcut: "s"
 };
-const optTest2 = {
+const hello = {
     description: "Speciale test Number",
     defaultVal: 10,
     shortcut: "n"
 };
-const optTest3 = {
+const silent = {
     description: "Speciale test boolean",
     defaultVal: true,
     shortcut: "b"
@@ -22,8 +22,8 @@ const optTest3 = {
 
 const argPars = new ArgParser("0.1.0");
 argPars.addCommand("version", version);
-argPars.addCommand("hello", optTest2);
-argPars.addCommand("silent", optTest3);
+argPars.addCommand("hello", hello);
+argPars.addCommand("silent", silent);
 // argPars.addCommand("h", "help", "print help");
 // argPars.addCommand("v", "version", "Give acrtual version of the module");
 // argPars.addCommand("t", "test", "Speciale test");
@@ -35,4 +35,4 @@ console.log(parsedArg);
 // argPars.help();
 // argPars.getVersion();
 
-argPars.execute();
+// argPars.execute();
