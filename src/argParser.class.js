@@ -136,7 +136,6 @@ class ArgParser {
         // vérifier la validité des commandes contenu dans l'obj parsedArgs
         for (const key of Object.keys(this.parsedArgs)) {
             console.log(`\n${key} - ${this.parsedArgs[key]}`);
-            // console.log(`${this.commands}`); Array of obj command
             const atLeastOneTrue = [];
             let correctTypes = false;
             for (const command of this.commands) {
@@ -149,8 +148,6 @@ class ArgParser {
                     const error = `${key}'s argument is a ${typeof this.parsedArgs[key]} should be a ${typeof command.defaultVal}`;
                     throw new Error(error);
                 }
-                // console.log(correctTypes);
-                // console.log(key === command.name);
                 // Verify if there is at least one command write on command line
                 // which match with command added with addCommand method
                 atLeastOneTrue.push(key === command.name);
@@ -177,18 +174,9 @@ class ArgParser {
         const data = await readFile(packageJson, { encoding: "utf8" });
         const { name, description } = JSON.parse(data);
         console.log(`Usage: ${name} [option]\n\n${description}\n\noptions:`);
-
-        let maxLengthName = 0;
-        // browse table to get max lenth of name option to deduce number of white space
-        for (const command of this.commands) {
-            if (maxLengthName < command.name.length) {
-                maxLengthName = command.name.length;
-            }
-        }
         // print every option on terminal
         for (const command of this.commands) {
-            const whiteSpace = " ".repeat(maxLengthName - command.name.length);
-            console.log(`\t-${command.shortcut}, --${command.name} ${whiteSpace} ${command.description}`);
+            console.log(`\t-${command.shortcut}, --${command.name}\n${command.description}`);
         }
     }
 
