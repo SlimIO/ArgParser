@@ -84,6 +84,7 @@ class ArgParser {
     parse(argv = process.argv.slice(2)) {
         let currentCmd;
         let values = [];
+        let indx = -1;
         // parser les arguments en ligne de commande et les confrontés avec la liste des commandes définies
         if (argv.length === 0) {
             return void 0;
@@ -103,21 +104,18 @@ class ArgParser {
                 // si l'argument precedent ne fut pas une commande
                 // ce qui signifie que la commande ne possedait pas d'arguments, on la passe donc a true
                 currentCmd = /^-{2}/g.test(argvArgument) ? argvArgument.slice(2) : argvArgument;
+                indx++;
             }
             else {
                 // On rentre ici uniquement si la valeur de argvArgument ne possède pas de tirets
                 // On traite donc ici les arguments des commandes
                 // Verify if argument is a number
-                const isNumber = !isNaN(Number(argvArgument));
-                values.push(isNumber ? Number(argvArgument) : argvArgument);
+                const myNumber = Number(argvArgument);
+                values.push(!isNaN(myNumber) ? myNumber : argvArgument);
                 // for the first argument of a command
-                if (values.length <= 1) {
-                    Reflect.set(this.parsedArgs, currentCmd, values[0]);
-                }
-                else {
-                    // if there is severals argument for one command
-                    Reflect.set(this.parsedArgs, currentCmd, values);
-                }
+                const property = currentCmd === null ? Object.keys(this.parsedArgs)[indx] : currentCmd;
+                // console.log(prop);
+                Reflect.set(this.parsedArgs, property, values.length === 1 ? values[0] : values);
                 currentCmd = null;
             }
         }

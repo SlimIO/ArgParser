@@ -54,7 +54,7 @@ const arr1 = [6, 7];
 arr.push(arr1);
 console.log(arr);
 -----------------------------------------------------------------------------
-*/
+
 const ret = new Map();
 let currCmd = null;
 let values = [];
@@ -77,7 +77,7 @@ for (const arg of process.argv.slice(2)) {
     }
 }
 console.log(values);
-/*
+
 -----------------------------------------------------------------------------
 const currCmd = "--version";
 if (currCmd) {
@@ -86,4 +86,9 @@ if (currCmd) {
 else {
     console.log("null");
 }
+-----------------------------------------------------------------------------
 */
+const obj = {};
+Reflect.set(obj, "property1", 25);
+Reflect.set(obj, "property2", "prop2");
+console.log(Object.keys(obj)[0]);
