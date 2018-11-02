@@ -21,15 +21,18 @@ const silent = {
 };
 
 const argPars = new ArgParser("0.1.0");
-argPars.addCommand("version", version);
-argPars.addCommand("hello", hello);
+argPars.addCommand("fdgdfgd", version);
+argPars.addCommand("hello", hello, () => {
+    console.log("Hello");
+});
 argPars.addCommand("silent", silent);
 // argPars.addCommand("h", "help", "print help");
 // argPars.addCommand("v", "version", "Give acrtual version of the module");
 // argPars.addCommand("t", "test", "Speciale test");
 const parsedArg = argPars.parse();
-console.log(parsedArg);
-
+// console.log(parsedArg);
+// console.log(argPars);
+argPars.hello();
 // console.log(argPars.parse());
 
 // argPars.help();

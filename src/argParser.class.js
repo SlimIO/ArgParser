@@ -36,13 +36,14 @@ class ArgParser {
      * @param {String} options.description description of what the argument provide
      * @param {String|Number|Boolean} options.defaultVal defalt value of the command
      * @param {String=} options.shortcut shortcut of argument
+     * @callback callback
      * @throws {TypeError}
      *
      * @returns {void}
      *
      * @version 0.1.0
      */
-    addCommand(name, options) {
+    addCommand(name, options, callback) {
         // Manage Errors
         if (is.nullOrUndefined(name)) {
             throw new Error("you must name your command");
@@ -71,6 +72,19 @@ class ArgParser {
         }
         options.name = name;
         this.commands.push(options);
+        const callbackNameExist = Object.keys(this)
+            .map((key) => key === name)
+            .filter((key) => key === true)
+            .length !== 0;
+        console.log(callbackNameExist);
+        
+        if (callbackNameExist) {
+            const error = `Command name "${name}" alredy use. Please change the name`;
+            throw new Error(error);
+        }
+        if (callback) {
+            this[name] = callback;
+        }
     }
 
     /** Parse and verify if arguments passed in command line are executable

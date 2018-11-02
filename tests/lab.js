@@ -87,8 +87,31 @@ else {
     console.log("null");
 }
 -----------------------------------------------------------------------------
-*/
 const obj = {};
 Reflect.set(obj, "property1", 25);
 Reflect.set(obj, "property2", "prop2");
 console.log(Object.keys(obj)[0]);
+*/
+const obj = {
+    test: "test",
+    fct: function xx(callback) {
+        console.log("function");
+        // verifier si le callback existe
+        console.log(`callback: ${callback}`);
+        if (callback) {
+            console.log("exist");
+            console.log(typeof callback);
+        }
+        else {
+            console.log("no exist");
+
+        }
+        // this["call"] = callback;
+    }
+};
+function name() {
+    console.log("callback");
+}
+obj.fct(name);
+
+console.log(obj);
