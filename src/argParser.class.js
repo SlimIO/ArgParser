@@ -8,6 +8,10 @@ const { parse, join } = require("path");
 // Require Third-party dependencies
 const is = require("@slimio/is");
 
+/** This callback is called `commandFctCallback` and execute the associated function of specifique command
+ * @callback commandFctCallback
+ */
+
 /**
  * @class ArgParser
  * @classdesc Parse arguments in command line for SlimIO projects
@@ -30,13 +34,14 @@ class ArgParser {
     }
 
     /**
-     * add commands
+     * add a command
+     *
      * @param {!String} name name of command
      * @param {Object} options Object represent
      * @param {String} options.description description of what the argument provide
      * @param {String|Number|Boolean} options.defaultVal defalt value of the command
      * @param {String=} options.shortcut shortcut of argument
-     * @callback callback
+     * @param {commandFctCallback} callback Associated function to execute for command for the command
      * @throws {TypeError}
      *
      * @returns {void}
@@ -76,8 +81,7 @@ class ArgParser {
             .map((key) => key === name)
             .filter((key) => key === true)
             .length !== 0;
-        console.log(callbackNameExist);
-        
+        // console.log(callbackNameExist);
         if (callbackNameExist) {
             const error = `Command name "${name}" alredy use. Please change the name`;
             throw new Error(error);
@@ -106,11 +110,12 @@ class ArgParser {
         if (this.commands.length === 0) {
             throw new Error("There is no commands, you have to add option with addCommands() method befor using parse() methode");
         }
+
         for (const argvArgument of argv) {
             // Si l'argument commence par deux tiret
             if (/^-{1,2}/g.test(argvArgument)) {
-                if (currentCmd) {
-                    Reflect.set(this.parsedArgs, currentCmd, true);
+                if (currentCmd || argv.length === 1) {
+                    Reflect.set(this.parsedArgs, currentCmd ? currentCmd : argvArgument.slice(2), true);
                 }
                 // Remise a zero des variables values et values lorsqu'on tombe sur une commande "--"
                 // Mise en mémoire de la nouvelle commande rencontrée
@@ -147,9 +152,10 @@ class ArgParser {
     execute() {
         // vérifier la validité des commandes contenu dans l'obj parsedArgs
         for (const key of Object.keys(this.parsedArgs)) {
-            console.log(`\n${key} - ${this.parsedArgs[key]}`);
+            // console.log(`\n${key} - ${this.parsedArgs[key]}`);
             const atLeastOneTrue = [];
             let correctTypes = false;
+
             for (const command of this.commands) {
                 // console.log(`${command.name} - ${typeof command.defaultVal}|${typeof this.parsedArgs[key]}`);
                 const typeDefaultVal = typeof command.defaultVal;
@@ -164,13 +170,25 @@ class ArgParser {
                 // which match with command added with addCommand method
                 atLeastOneTrue.push(key === command.name);
             }
-            const isFinded = atLeastOneTrue.find((val) => val === true);
-            if (!isFinded) {
-                const error = `commande "${key}" does not exist`;
-                throw new Error(error);
+            console.log(`key ${key}`);
+            if (!(key === "version" || key === "v" || key === "help" || key === "h")) {
+                const isFinded = atLeastOneTrue.find((val) => val === true);
+                if (!isFinded) {
+                    const error = `commande "${key}" does not exist`;
+                    throw new Error(error);
+                }
+            }
+            // Execute callBack
+            if (key === "version" || key === "v") {
+                console.log(`v${this.version}`);
+            }
+            else if (key === "help" || key === "h") {
+                this.help();
+            }
+            else {
+                this[key].call(this);
             }
         }
-        // Execute callBack
     }
 
     /** displays informations about the addon and all the arguments that the addon can take in the console
@@ -188,7 +206,7 @@ class ArgParser {
         console.log(`Usage: ${name} [option]\n\n${description}\n\noptions:`);
         // print every option on terminal
         for (const command of this.commands) {
-            console.log(`\t-${command.shortcut}, --${command.name}\n${command.description}`);
+            console.log(`\t-${command.shortcut}, --${command.name}\n\t\t${command.description}`);
         }
     }
 
