@@ -4,14 +4,13 @@
 
 // Require internal Dependenties
 const ArgParser = require("../src/argParser.class");
-const version = {
+const xixi = {
     description: "Speciale test String",
     defaultVal: "SpecialVal",
     shortcut: "s"
 };
 const hello = {
     description: "Speciale test Number",
-    defaultVal: "hello",
     shortcut: "n"
 };
 const silent = {
@@ -21,7 +20,7 @@ const silent = {
 };
 
 const argPars = new ArgParser("0.1.0");
-// argPars.addCommand("version", version);
+// argPars.addCommand("xixi", xixi);
 argPars.addCommand("hello", hello, () => {
     console.log("Hello world");
 });

@@ -41,14 +41,13 @@ class ArgParser {
      * @param {String} options.description description of what the argument provide
      * @param {String|Number|Boolean} options.defaultVal defalt value of the command
      * @param {String=} options.shortcut shortcut of argument
-     * @param {commandFctCallback} callback Associated function to execute for command for the command
      * @throws {TypeError}
      *
      * @returns {void}
      *
      * @version 0.1.0
      */
-    addCommand(name, options, callback) {
+    addCommand(name, options) {
         // Manage Errors
         if (is.nullOrUndefined(name)) {
             throw new Error("you must name your command");
@@ -77,18 +76,6 @@ class ArgParser {
         }
         options.name = name;
         this.commands.push(options);
-        const callbackNameExist = Object.keys(this)
-            .map((key) => key === name)
-            .filter((key) => key === true)
-            .length !== 0;
-        // console.log(callbackNameExist);
-        if (callbackNameExist) {
-            const error = `Command name "${name}" alredy use. Please change the name`;
-            throw new Error(error);
-        }
-        if (callback) {
-            this[name] = callback;
-        }
     }
 
     /** Parse and verify if arguments passed in command line are executable
@@ -100,44 +87,29 @@ class ArgParser {
      * @version 0.1.0
      */
     parse(argv = process.argv.slice(2)) {
-        let currentCmd;
+        let currCmd = null;
+        const commmandes = new Map();
+        const shortcut = new Map();
         let values = [];
-        let indx = -1;
-        // parser les arguments en ligne de commande et les confrontés avec la liste des commandes définies
-        if (argv.length === 0) {
-            return void 0;
-        }
-        if (this.commands.length === 0) {
-            throw new Error("There is no commands, you have to add option with addCommands() method befor using parse() methode");
+        
+        function writeCommand() {            
+            commmandes.set(currCmd, values.length === 0 ? true : values.length === 1 ? values[0] : values);
+            values = [];
         }
 
-        for (const argvArgument of argv) {
-            // Si l'argument commence par deux tiret
-            if (/^-{1,2}/g.test(argvArgument)) {
-                if (currentCmd || argv.length === 1) {
-                    Reflect.set(this.parsedArgs, currentCmd ? currentCmd : argvArgument.slice(2), true);
+        for (const arg of argv) {
+            if (/^-{1,2}/g.test(arg)) {
+                if (currCmd !== null) {
+                    writeCommand();
                 }
-                // Remise a zero des variables values et values lorsqu'on tombe sur une commande "--"
-                // Mise en mémoire de la nouvelle commande rencontrée
-                values = [];
-                // si l'argument precedent ne fut pas une commande
-                // ce qui signifie que la commande ne possedait pas d'arguments, on la passe donc a true
-                currentCmd = /^-{2}/g.test(argvArgument) ? argvArgument.slice(2) : argvArgument;
-                indx++;
+                currCmd = arg.replace(/-/g, "");
             }
             else {
-                // On rentre ici uniquement si la valeur de argvArgument ne possède pas de tirets
-                // On traite donc ici les arguments des commandes
-                // Verify if argument is a number
-                const myNumber = Number(argvArgument);
-                values.push(!isNaN(myNumber) ? myNumber : argvArgument);
-                // for the first argument of a command
-                const property = currentCmd === null ? Object.keys(this.parsedArgs)[indx] : currentCmd;
-                // console.log(prop);
-                Reflect.set(this.parsedArgs, property, values.length === 1 ? values[0] : values);
-                currentCmd = null;
+                values.push(arg);
             }
         }
+        writeCommand();
+        console.log(commmandes);
 
         return this.parsedArgs;
     }
@@ -162,15 +134,15 @@ class ArgParser {
                 const typePasedArg = typeof this.parsedArgs[key];
                 correctTypes = typeDefaultVal === typePasedArg;
                 // Verify correct type of arguments comparing to the defaultVal
-                if (command.name === key && !correctTypes) {
-                    const error = `${key}'s argument is a ${typeof this.parsedArgs[key]} should be a ${typeof command.defaultVal}`;
+                console.log(`command.defaultVal: ${command.defaultVal}`);
+                if (command.defaultVal && command.name === key && !correctTypes) {
+                    const error = `${key}'s argument is a ${typeof this.parsedArgs[key]} and it should be a ${typeof command.defaultVal}`;
                     throw new Error(error);
                 }
                 // Verify if there is at least one command write on command line
                 // which match with command added with addCommand method
                 atLeastOneTrue.push(key === command.name);
             }
-            console.log(`key ${key}`);
             if (!(key === "version" || key === "v" || key === "help" || key === "h")) {
                 const isFinded = atLeastOneTrue.find((val) => val === true);
                 if (!isFinded) {
@@ -185,6 +157,7 @@ class ArgParser {
             else if (key === "help" || key === "h") {
                 this.help();
             }
+            // if a command takes several arguments call() apply()
             else {
                 this[key].call(this);
             }
@@ -208,14 +181,6 @@ class ArgParser {
         for (const command of this.commands) {
             console.log(`\t-${command.shortcut}, --${command.name}\n\t\t${command.description}`);
         }
-    }
-
-    /** Give the actual version of the addon
-     * @returns {void}
-     * @version 0.1.0
-     */
-    getVersion() {
-        console.log(`v${this.version}`);
     }
 }
 
