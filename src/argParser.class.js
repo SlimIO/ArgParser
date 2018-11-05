@@ -16,8 +16,9 @@ const is = require("@slimio/is");
  * @class ArgParser
  * @classdesc Parse arguments in command line for SlimIO projects
  *
- * @property {Object[]} commands list of command define by developper
- * @property {Object} parsedArgs OBject represent parsed arguments command line
+ * @property {Map} listCmd List of command define by developper
+ * @property {Map} parsedArgs List represent parsed arguments command line
+ * @property {Set} listShortcut List of existing shortcut
  * @property {String} version Current version of ArgParser
  *
  * @version 0.1.0
@@ -28,13 +29,14 @@ class ArgParser {
      * @param {String} version Set version
      */
     constructor(version) {
-        this.commands = [];
-        this.parsedArgs = {};
+        this.listCmd = new Map();
+        this.parsedArgs = new Map();
+        this.listShortcut = new Set();
         this.version = version;
     }
 
     /**
-     * add a command
+     * Adds a command to the existing command list
      *
      * @param {!String} name name of command
      * @param {Object} options Object represent
@@ -61,37 +63,34 @@ class ArgParser {
         if (!is.string(options.description) && is.nullOrUndefined(options.description)) {
             throw new TypeError("description param must be a string");
         }
-        // check existance of duplicate name or shortcut
-        if (this.commands.length > 0) {
-            for (const command of this.commands) {
-                if (command.name === name) {
-                    const error = `The name ${name} already exist`;
-                    throw new Error(error);
-                }
-                if (!is.nullOrUndefined(options.shortcut) && command.shortcut === options.shortcut) {
-                    const error = `The shortcut ${command.shortcut} already exist`;
-                    throw new Error(error);
-                }
-            }
+        // check duplicate name
+        if (this.listCmd.size > 0 && this.listCmd.has(name)) {
+            const error = `Duplicate command nammed "${name}"`;
+            throw new Error(error);
         }
-        options.name = name;
-        this.commands.push(options);
+        // check duplicate shortcut
+        if (this.listShortcut.has(options.shortcut)) {
+            const error = `duplicate shortcut nammed "${options.shortcut}"`;
+            throw new Error(error);
+        }
+        this.listShortcut.add(options.shortcut);
+        this.listCmd.set(name, options);
     }
 
     /** Parse and verify if arguments passed in command line are executable
      * @param {String[]} [argv=process.argv.slice(2)] list of command entered
      * @throws {Error}
      *
-     * @returns {Object|void} Object represent all arguments parsed
+     * @returns {Map} Object represent all arguments parsed
      *
      * @version 0.1.0
      */
     parse(argv = process.argv.slice(2)) {
         let currCmd = null;
         const commmandes = new Map();
-        const shortcut = new Map();
+        // const shortcut = new Map();
         let values = [];
-        
+
         function writeCommand() {            
             commmandes.set(currCmd, values.length === 0 ? true : values.length === 1 ? values[0] : values);
             values = [];
