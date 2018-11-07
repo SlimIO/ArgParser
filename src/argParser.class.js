@@ -89,8 +89,9 @@ class ArgParser {
 
         const writeCommand = () => {
             const val = values.length === 1 ? values[0] : values;
-            // console.log(`${currCmd} - ${val}`);
-            this.parsedArg.set(currCmd, values.length === 0 ? true : val);
+            // replace shortcut by command name
+            const key = this.shortcuts.has(currCmd) ? this.shortcuts.get(currCmd) : currCmd;
+            this.parsedArg.set(key, values.length === 0 ? true : val);
             values = [];
         };
 
@@ -100,21 +101,12 @@ class ArgParser {
                     writeCommand();
                 }
                 currCmd = arg.replace(/-/g, "");
-                if (/^-{1}[^-]/g.test(arg)) {
-                    // console.log(`shortcut has ${currCmd}: ${this.shortcuts.has(currCmd)}`);
-                    // console.log(`Value of ${currCmd}: ${this.shortcuts.get(currCmd)} `);
-                    const error = new Error(`Shortcut "${currCmd}" does not exist`);
-                    currCmd = this.shortcuts.has(currCmd) ? this.shortcuts.get(currCmd) : error;
-                    console.log(`After - ${currCmd}`);
-                }
             }
             else {
                 values.push(arg);
             }
         }
         writeCommand();
-
-        return this.parsedArg;
     }
 
     /** displays informations about the addon and all the arguments that the addon can take in the console
