@@ -1,9 +1,6 @@
 // Require Node.JS dependencies
-const {
-    promises: { readFile, access },
-    constants: { R_OK }
-} = require("fs");
-const { parse, join } = require("path");
+const { readFileSync } = require("fs");
+const { join } = require("path");
 
 // Require Third-party dependencies
 const is = require("@slimio/is");
@@ -16,9 +13,9 @@ const is = require("@slimio/is");
  * @class ArgParser
  * @classdesc Parse arguments in command line for SlimIO projects
  *
- * @property {Map} listCmd List of command define by developper
+ * @property {Map} commands all commands define by developper
+ * @property {Map} shortcuts Map of existing shortcut with name associated
  * @property {Map} parsedArgs List represent parsed arguments command line
- * @property {Set} listShortcut List of existing shortcut
  * @property {String} version Current version of ArgParser
  *
  * @version 0.1.0
@@ -29,9 +26,9 @@ class ArgParser {
      * @param {String} version Set version
      */
     constructor(version) {
-        this.listCmd = new Map();
-        this.parsedArgs = new Map();
-        this.listShortcut = new Set();
+        this.commands = new Map();
+        this.shortcuts = new Map();
+        this.parsedArg = new Map();
         this.version = version;
     }
 
@@ -63,38 +60,39 @@ class ArgParser {
         if (!is.string(options.description) && is.nullOrUndefined(options.description)) {
             throw new TypeError("description param must be a string");
         }
+
         // check duplicate name
-        if (this.listCmd.size > 0 && this.listCmd.has(name)) {
-            const error = `Duplicate command nammed "${name}"`;
-            throw new Error(error);
+        if (this.commands.has(name)) {
+            throw new Error(`Duplicate command nammed "${name}"`);
         }
         // check duplicate shortcut
-        if (this.listShortcut.has(options.shortcut)) {
-            const error = `duplicate shortcut nammed "${options.shortcut}"`;
-            throw new Error(error);
+        if (this.shortcuts.has(options.shortcut)) {
+            throw new Error(`duplicate shortcut nammed "${options.shortcut}"`);
         }
-        this.listShortcut.add(options.shortcut);
-        this.listCmd.set(name, options);
+
+        this.shortcuts.set(options.shortcut, name);
+        this.commands.set(name, options);
     }
 
     /** Parse and verify if arguments passed in command line are executable
-     * @param {String[]} [argv=process.argv.slice(2)] list of command entered
+     * @param {String[]} [argv] list of command inputted
      * @throws {Error}
      *
-     * @returns {Map} Object represent all arguments parsed
+     * @returns {void}
      *
      * @version 0.1.0
      */
     parse(argv = process.argv.slice(2)) {
         let currCmd = null;
-        const commmandes = new Map();
-        // const shortcut = new Map();
         let values = [];
+        // const usedShortCut= new Set();
 
-        function writeCommand() {            
-            commmandes.set(currCmd, values.length === 0 ? true : values.length === 1 ? values[0] : values);
+        const writeCommand = () => {
+            const val = values.length === 1 ? values[0] : values;
+            // console.log(`${currCmd} - ${val}`);
+            this.parsedArg.set(currCmd, values.length === 0 ? true : val);
             values = [];
-        }
+        };
 
         for (const arg of argv) {
             if (/^-{1,2}/g.test(arg)) {
@@ -102,83 +100,39 @@ class ArgParser {
                     writeCommand();
                 }
                 currCmd = arg.replace(/-/g, "");
+                if (/^-{1}[^-]/g.test(arg)) {
+                    // console.log(`shortcut has ${currCmd}: ${this.shortcuts.has(currCmd)}`);
+                    // console.log(`Value of ${currCmd}: ${this.shortcuts.get(currCmd)} `);
+                    const error = new Error(`Shortcut "${currCmd}" does not exist`);
+                    currCmd = this.shortcuts.has(currCmd) ? this.shortcuts.get(currCmd) : error;
+                    console.log(`After - ${currCmd}`);
+                }
             }
             else {
                 values.push(arg);
             }
         }
         writeCommand();
-        console.log(commmandes);
 
-        return this.parsedArgs;
-    }
-
-    /** Execute fonctions associated to commands
-     * @method execute
-     * @param {Object} [parsedArgs = this.parsedArgs] Object represent parsed arguments command line
-     * @throws {Error}
-     *
-     * @return {void}
-     */
-    execute() {
-        // vérifier la validité des commandes contenu dans l'obj parsedArgs
-        for (const key of Object.keys(this.parsedArgs)) {
-            // console.log(`\n${key} - ${this.parsedArgs[key]}`);
-            const atLeastOneTrue = [];
-            let correctTypes = false;
-
-            for (const command of this.commands) {
-                // console.log(`${command.name} - ${typeof command.defaultVal}|${typeof this.parsedArgs[key]}`);
-                const typeDefaultVal = typeof command.defaultVal;
-                const typePasedArg = typeof this.parsedArgs[key];
-                correctTypes = typeDefaultVal === typePasedArg;
-                // Verify correct type of arguments comparing to the defaultVal
-                console.log(`command.defaultVal: ${command.defaultVal}`);
-                if (command.defaultVal && command.name === key && !correctTypes) {
-                    const error = `${key}'s argument is a ${typeof this.parsedArgs[key]} and it should be a ${typeof command.defaultVal}`;
-                    throw new Error(error);
-                }
-                // Verify if there is at least one command write on command line
-                // which match with command added with addCommand method
-                atLeastOneTrue.push(key === command.name);
-            }
-            if (!(key === "version" || key === "v" || key === "help" || key === "h")) {
-                const isFinded = atLeastOneTrue.find((val) => val === true);
-                if (!isFinded) {
-                    const error = `commande "${key}" does not exist`;
-                    throw new Error(error);
-                }
-            }
-            // Execute callBack
-            if (key === "version" || key === "v") {
-                console.log(`v${this.version}`);
-            }
-            else if (key === "help" || key === "h") {
-                this.help();
-            }
-            // if a command takes several arguments call() apply()
-            else {
-                this[key].call(this);
-            }
-        }
+        return this.parsedArg;
     }
 
     /** displays informations about the addon and all the arguments that the addon can take in the console
      * @param {String} [packageJson=null] Path to package.json
      * @function help
-     * @return {Promise}
+     * @return {void}
      * @version 0.1.0
     */
-    async help() {
-        const packageJson = join(parse(__dirname).dir, "package.json");        
+    help() {
+        const packageJson = join(__dirname, "package.json");        
         // read the package.json to get name of addon and his description & print it
-        await access(packageJson, R_OK);
-        const data = await readFile(packageJson, { encoding: "utf8" });
+        const data = readFileSync(packageJson, { encoding: "utf8" });
         const { name, description } = JSON.parse(data);
         console.log(`Usage: ${name} [option]\n\n${description}\n\noptions:`);
         // print every option on terminal
         for (const command of this.commands) {
-            console.log(`\t-${command.shortcut}, --${command.name}\n\t\t${command.description}`);
+            console.log(`\t-${command.shortcut}, --${command.name}`);
+            console.log(`\t\t${command.description}`);
         }
     }
 }

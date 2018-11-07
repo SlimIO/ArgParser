@@ -16,37 +16,27 @@ const hello = {
 const silent = {
     description: "Speciale test boolean",
     defaultVal: true,
-    shortcut: "b"
+    shortcut: "i"
 };
-const dupli = {
-    description: "duplicate",
-    shortcut: "b"
-}
+// const dupli = {
+//     description: "duplicate",
+//     shortcut: "b"
+// }
+
 const argPars = new ArgParser("0.1.0");
 argPars.addCommand("special", special);
 argPars.addCommand("hello", hello);
 argPars.addCommand("silent", silent);
-// argPars.addCommand("dupli", dupli);
-console.log(argPars.listShortcut);
 
-// console.log(argPars.listCmd);
-    // const iterator = argPars.listCmd[Symbol.iterator]() 
-    // for (const [key, value] of iterator) {
-    //     console.log(`${key} - ${value.shortcut}`);
-        
-    // }
+argPars.parse();
+console.log(argPars.parsedArg);
 
+// console.log(argPars.shortcuts);
+// console.log(argPars.commands);
+
+// Shortcuts exemples
 // argPars.addCommand("h", "help", "print help");
 // argPars.addCommand("v", "version", "Give acrtual version of the module");
 // argPars.addCommand("t", "test", "Speciale test");
 
-// argPars.parse();
-// console.log(parsedArg);
-// console.log(argPars);
-
-// argPars.hello();
-// console.log(argPars.parse());
-
 // argPars.help();
-
-// argPars.execute();
