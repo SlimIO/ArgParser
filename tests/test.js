@@ -11,7 +11,7 @@ const special = {
 };
 const hello = {
     description: "Speciale test Number",
-    shortcut: "h"
+    shortcut: "he"
 };
 const silent = {
     description: "Speciale test boolean",

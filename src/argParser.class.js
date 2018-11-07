@@ -30,6 +30,12 @@ class ArgParser {
         this.shortcuts = new Map();
         this.parsedArg = new Map();
         this.version = version;
+
+        this.shortcuts.set("h", "help");
+        this.commands.set("help", { shortcut: "h" });
+
+        this.shortcuts.set("v", "version");
+        this.commands.set("version", { shortcut: "v" });
     }
 
     /**
@@ -85,16 +91,25 @@ class ArgParser {
     parse(argv = process.argv.slice(2)) {
         let currCmd = null;
         let values = [];
-        // const usedShortCut= new Set();
 
         const writeCommand = () => {
             const val = values.length === 1 ? values[0] : values;
             // replace shortcut by command name
             const key = this.shortcuts.has(currCmd) ? this.shortcuts.get(currCmd) : currCmd;
+            // verify if command exists
             if (this.commands.has(key)) {
                 this.parsedArg.set(key, values.length === 0 ? true : val);
             }
             values = [];
+
+            if (key === "version") {
+                console.log(`v${this.version}`);
+                process.exit(0);
+            }
+            if (key === "help") {
+                this.help();
+                process.exit(0);
+            }
         };
 
         for (const arg of argv) {
