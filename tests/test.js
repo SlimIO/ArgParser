@@ -34,9 +34,9 @@ argPars.addCommand("hello", hello);
 argPars.addCommand("silent", silent);
 argPars.addCommand("fizz", buzz);
 
-console.log(argPars.shortcuts);
+// console.log(argPars.shortcuts);
 argPars.parse();
-console.log(argPars.parsedArg);
+// console.log(argPars.parsedArg);
 
 // console.log(argPars.commands);
 

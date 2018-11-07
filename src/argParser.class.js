@@ -91,7 +91,9 @@ class ArgParser {
             const val = values.length === 1 ? values[0] : values;
             // replace shortcut by command name
             const key = this.shortcuts.has(currCmd) ? this.shortcuts.get(currCmd) : currCmd;
-            this.parsedArg.set(key, values.length === 0 ? true : val);
+            if (this.commands.has(key)) {
+                this.parsedArg.set(key, values.length === 0 ? true : val);
+            }
             values = [];
         };
 
