@@ -32,20 +32,23 @@ class ArgParser {
         this.version = version;
 
         this.shortcuts.set("h", "help");
-        this.commands.set("help", { shortcut: "h" });
+        this.commands.set("help", { description: "", shortcut: "h" });
 
         this.shortcuts.set("v", "version");
-        this.commands.set("version", { shortcut: "v" });
+        this.commands.set("version", { description: "Give the current version", shortcut: "v" });
     }
 
     /**
      * Adds a command to the existing command list
      *
      * @param {!String} name name of command
+     * 
      * @param {Object} options Object represent
-     * @param {String} options.description description of what the argument provide
-     * @param {String|Number|Boolean} options.defaultVal defalt value of the command
-     * @param {String=} options.shortcut shortcut of argument
+     * @param {String} options.description Description of what the argument provide
+     * @param {String=} options.shortcut Shortcut of argument
+     * @param {String|Number|Boolean=} options.defaultVal Defalt value of the command
+     * @param {String=} options.type Argument type of commands
+     * 
      * @throws {TypeError}
      *
      * @returns {void}
@@ -62,6 +65,9 @@ class ArgParser {
         }
         if (!is.string(options.shortcut)) {
             throw new TypeError("shortcut param must be a string");
+        }
+        if (!is.string(options.type) && !is.nullOrUndefined(options.type)) {
+            throw new TypeError("type param must be a string");
         }
         if (!is.string(options.description) && is.nullOrUndefined(options.description)) {
             throw new TypeError("description param must be a string");
@@ -93,12 +99,21 @@ class ArgParser {
         let values = [];
 
         const writeCommand = () => {
-            const val = values.length === 1 ? values[0] : values;
+            let val = values.length === 1 ? values[0] : values;
             // replace shortcut by command name
             const key = this.shortcuts.has(currCmd) ? this.shortcuts.get(currCmd) : currCmd;
             // verify if command exists
             if (this.commands.has(key)) {
-                this.parsedArg.set(key, values.length === 0 ? true : val);
+                // verify value of current command default value
+                const defVal = this.commands.get(key).defaultVal;
+                if (!is.nullOrUndefined(defVal) && values.length === 0) {
+                    val = defVal;
+                }
+                if (is.nullOrUndefined(defVal) && values.length === 0) {
+                    val = true;
+                }
+                // Add command and arguments to parsedArg Map
+                this.parsedArg.set(key, val);
             }
             values = [];
 

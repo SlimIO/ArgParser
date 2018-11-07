@@ -7,26 +7,28 @@ const ArgParser = require("../src/argParser.class");
 const special = {
     description: "Speciale test String",
     defaultVal: "SpecialVal",
-    shortcut: "s"
+    shortcut: "S"
 };
 const hello = {
-    description: "Speciale test Number",
+    description: "Say hello",
+    defaultVal: "hello World",
     shortcut: "he"
 };
 const silent = {
     description: "Speciale test boolean",
     defaultVal: true,
-    shortcut: "i"
+    shortcut: "s"
 };
 const buzz = {
     description: "fizz buzz",
     defaultVal: true,
     shortcut: "f"
 };
-// const dupli = {
-//     description: "duplicate",
-//     shortcut: "b"
-// }
+const dupli = {
+    description: "duplicate",
+    shortcut: "b"
+
+};
 
 const argPars = new ArgParser("0.1.0");
 argPars.addCommand("special", special);
@@ -36,13 +38,6 @@ argPars.addCommand("fizz", buzz);
 
 // console.log(argPars.shortcuts);
 argPars.parse();
-// console.log(argPars.parsedArg);
-
+console.log(argPars.parsedArg);
 // console.log(argPars.commands);
 
-// Shortcuts exemples
-// argPars.addCommand("h", "help", "print help");
-// argPars.addCommand("v", "version", "Give acrtual version of the module");
-// argPars.addCommand("t", "test", "Speciale test");
-
-// argPars.help();
