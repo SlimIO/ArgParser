@@ -4,10 +4,10 @@
 
 // Require internal Dependenties
 const ArgParser = require("../src/argParser.class");
-const special = {
+const number = {
     description: "Speciale test String",
-    defaultVal: "SpecialVal",
-    shortcut: "S"
+    defaultVal: 25,
+    shortcut: "n"
 };
 const hello = {
     description: "Say hello",
@@ -16,28 +16,25 @@ const hello = {
 };
 const silent = {
     description: "Speciale test boolean",
-    defaultVal: true,
-    shortcut: "s"
+    defaultVal: "Salut",
+    shortcut: "s",
+    type: "boolean"
 };
 const buzz = {
     description: "fizz buzz",
     defaultVal: true,
     shortcut: "f"
 };
-const dupli = {
-    description: "duplicate",
-    shortcut: "b"
-
-};
 
 const argPars = new ArgParser("0.1.0");
-argPars.addCommand("special", special);
+argPars.addCommand("number", number);
 argPars.addCommand("hello", hello);
 argPars.addCommand("silent", silent);
 argPars.addCommand("fizz", buzz);
 
 // console.log(argPars.shortcuts);
-argPars.parse();
-console.log(argPars.parsedArg);
+const result = argPars.parse();
+console.log(result);
+// console.log(argPars.parsedArg);
 // console.log(argPars.commands);
 
