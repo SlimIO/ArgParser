@@ -27,9 +27,6 @@ class ArgParser {
             ["v", "version"]
         ]);
         this.version = version;
-
-        // this.commands.set("help", { description: "", shortcut: "h" });
-        // this.commands.set("version", { description: "Give the current version", shortcut: "v" });
     }
 
     /**
@@ -37,8 +34,8 @@ class ArgParser {
      *
      * @param {!String} name name of command
      *
-     * @param {Object} options Object represent options for command line
-     * @param {String} options.description Description of what the argument provide
+     * @param {Object=} options Object represent options for command line
+     * @param {String=} options.description Description of what the argument provide
      * @param {String=} options.shortcut Shortcut of argument
      * @param {String|Number|Boolean=} options.defaultVal Defalt value of the command
      * @param {String=} options.type Argument type of commands
@@ -57,14 +54,15 @@ class ArgParser {
         if (!is.string(name)) {
             throw new TypeError("name param must be a string");
         }
-        if (!is.string(options.shortcut)) {
-            throw new TypeError("shortcut param must be a string");
+        
+        if (!is.string(options.shortcut) && !is.nullOrUndefined(options.shortcut)) {
+            throw new TypeError("options.shortcut param must be a string");
         }
         if (!is.string(options.type) && !is.nullOrUndefined(options.type)) {
-            throw new TypeError("type param must be a string");
+            throw new TypeError("options.type param must be a string");
         }
-        if (!is.string(options.description) && is.nullOrUndefined(options.description)) {
-            throw new TypeError("description param must be a string");
+        if (!is.string(options.description) && !is.nullOrUndefined(options.description)) {
+            throw new TypeError("options.description param must be a string");
         }
 
         // check duplicate name
@@ -73,7 +71,7 @@ class ArgParser {
         }
         // check duplicate shortcut
         if (this.shortcuts.has(options.shortcut)) {
-            throw new Error(`duplicate shortcut nammed "${options.shortcut}"`);
+            throw new Error(`Duplicate shortcut nammed "${options.shortcut}"`);
         }
 
         this.shortcuts.set(options.shortcut, name);
@@ -96,7 +94,7 @@ class ArgParser {
         const parsedArg = new Map();
 
         // STEP 1: Parse argv
-        const writeCommand = () => {            
+        const writeCommand = () => {
             // replace shortcut by command name
             const key = this.shortcuts.has(currCmd) ? this.shortcuts.get(currCmd) : currCmd;
 
@@ -130,7 +128,7 @@ class ArgParser {
 
         // STEP 2: Check parsedArg
         const result = new Map();
-        
+
         for (const [key, values] of parsedArg) {
             const options = this.commands.get(key);
             let val = values;
@@ -141,7 +139,7 @@ class ArgParser {
                 else if (is.nullOrUndefined(options.defaultVal) && val.length === 0) {
                     val = true;
                 }
-                
+
                 if (!is.nullOrUndefined(options.type) && options.type === "number" && isNaN(Number(val))) {
                     throw new Error(`Arguments of ${key} must be type of ${options.type}`);
                 }

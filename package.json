@@ -15,13 +15,21 @@
     "nyc": "^13.0.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava --verbose",
+    "doc": "jsdoc -c ./jsdoc.json -r",
+    "coverage": "nyc ava",
+    "report": "nyc report --reporter=html"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SlimIO/ArgParser.git"
   },
-  "keywords": [],
+  "keywords": [
+    "SlimIO",
+    "ArgParser",
+    "argument",
+    "parser"
+  ],
   "author": "SlimIO",
   "license": "MIT",
   "bugs": {
