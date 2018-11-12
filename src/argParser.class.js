@@ -55,26 +55,29 @@ class ArgParser {
             throw new TypeError("name param must be a string");
         }
         
-        if (!is.string(options.shortcut) && !is.nullOrUndefined(options.shortcut)) {
-            throw new TypeError("options.shortcut param must be a string");
-        }
-        if (!is.string(options.type) && !is.nullOrUndefined(options.type)) {
-            throw new TypeError("options.type param must be a string");
-        }
-        if (!is.string(options.description) && !is.nullOrUndefined(options.description)) {
-            throw new TypeError("options.description param must be a string");
-        }
-
         // check duplicate name
         if (this.commands.has(name)) {
             throw new Error(`Duplicate command nammed "${name}"`);
         }
-        // check duplicate shortcut
-        if (this.shortcuts.has(options.shortcut)) {
-            throw new Error(`Duplicate shortcut nammed "${options.shortcut}"`);
-        }
+        
+        if (!is.nullOrUndefined(options)) {
 
-        this.shortcuts.set(options.shortcut, name);
+            if (!is.string(options.shortcut) && !is.nullOrUndefined(options.shortcut)) {
+                throw new TypeError("options.shortcut param must be a string");
+            }
+            if (!is.string(options.type) && !is.nullOrUndefined(options.type)) {
+                throw new TypeError("options.type param must be a string");
+            }
+            if (!is.string(options.description) && !is.nullOrUndefined(options.description)) {
+                throw new TypeError("options.description param must be a string");
+            }
+
+            // check duplicate shortcut
+            if (this.shortcuts.has(options.shortcut)) {
+                throw new Error(`Duplicate shortcut nammed "${options.shortcut}"`);
+            }
+            this.shortcuts.set(options.shortcut, name);
+        }
         this.commands.set(name, options);
     }
 
