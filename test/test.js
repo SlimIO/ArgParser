@@ -75,33 +75,7 @@ ava("AddCommand: Duplicate shortcut", (assert) => {
 //     assert.pass();
 // });
 /*
-const number = {
-    description: "Speciale test String",
-    defaultVal: 25,
-    shortcut: "n"
-};
-const hello = {
-    description: "Say hello",
-    defaultVal: "hello World",
-    shortcut: "he"
-};
-const silent = {
-    description: "Speciale test boolean",
-    defaultVal: "Salut",
-    shortcut: "s",
-    type: "boolean"
-};
-const buzz = {
-    description: "fizz buzz",
-    defaultVal: true,
-    shortcut: "f"
-};
 
-
-argPars.addCommand("number", number);
-argPars.addCommand("hello", hello);
-argPars.addCommand("silent", silent);
-argPars.addCommand("fizz", buzz);
 
 // console.log(argPars.shortcuts);
 const result = argPars.parse();

@@ -54,12 +54,12 @@ class ArgParser {
         if (!is.string(name)) {
             throw new TypeError("name param must be a string");
         }
-        
+
         // check duplicate name
         if (this.commands.has(name)) {
             throw new Error(`Duplicate command nammed "${name}"`);
         }
-        
+
         if (!is.nullOrUndefined(options)) {
 
             if (!is.string(options.shortcut) && !is.nullOrUndefined(options.shortcut)) {
@@ -76,8 +76,10 @@ class ArgParser {
             if (this.shortcuts.has(options.shortcut)) {
                 throw new Error(`Duplicate shortcut nammed "${options.shortcut}"`);
             }
+
             this.shortcuts.set(options.shortcut, name);
         }
+
         this.commands.set(name, options);
     }
 
@@ -87,6 +89,8 @@ class ArgParser {
      * If version or help are present, parse method will execute the function and stop the programme.
      * @param {String[]} [argv] list of command inputted
      *
+     * @throws {Error}
+     * 
      * @returns {Map} result
      *
      * @version 0.1.0
@@ -131,26 +135,25 @@ class ArgParser {
 
         // STEP 2: Check parsedArg
         const result = new Map();
+        const E_TYPES = new Map([
+            ["number", (val) => Number.isNaN(Number(val))],
+            ["string", (val) => typeof val !== "string"]
+        ]);
+        for (const [commandName, values] of parsedArg) {
+            if (!this.commands.has(commandName)) {
+                continue;
+            }
+            const { type, defaultVal } = this.commands.get(commandName);
 
-        for (const [key, values] of parsedArg) {
-            const options = this.commands.get(key);
-            let val = values;
-            if (this.commands.has(key)) {
-                if (!is.nullOrUndefined(options.defaultVal) && val.length === 0) {
-                    val = options.defaultVal;
-                }
-                else if (is.nullOrUndefined(options.defaultVal) && val.length === 0) {
-                    val = true;
-                }
+            if (E_TYPES.has(type) && E_TYPES.get(type)(values)) {
+                throw new Error(`Arguments of ${commandName} must be type of ${type}`);
+            }
 
-                if (!is.nullOrUndefined(options.type) && options.type === "number" && isNaN(Number(val))) {
-                    throw new Error(`Arguments of ${key} must be type of ${options.type}`);
-                }
-                if (!is.nullOrUndefined(options.type) && options.type === "string" && typeof val !== "string") {
-                    throw new Error(`Arguments of ${key} must be type of ${options.type}`);
-                }
-
-                result.set(key, val);
+            if (values.length === 0) {
+                result.set(commandName, is.nullOrUndefined(defaultVal) ? true : defaultVal);
+            }
+            else {
+                result.set(commandName, values);
             }
         }
 
