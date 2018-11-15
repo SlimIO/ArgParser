@@ -5,6 +5,12 @@ const ArgParser = require("../src/argParser.class");
 // Require third-party Dependenties
 const ava = require("ava");
 
+ava("constructor: missed arg", (assert) => {
+    const err = assert.throws(() =>{
+        new ArgParser();
+    }, Error);
+    assert.is(err.message, "You must precise the version of argParse used");
+});
 
 ava("AddCommand: throw error, argument name required", (assert) => {
     const argPars = new ArgParser("0.1.0");
@@ -70,16 +76,96 @@ ava("AddCommand: Duplicate shortcut", (assert) => {
     assert.is(DupliCmdName.message, "Duplicate shortcut nammed \"x\"");
 });
 
+ava("Parse: Hello World", (assert) => {
+    const argPars = new ArgParser("0.1.0");
+    const hello = {
+        description: "Say hello World",
+        defaultVal: "hello World",
+        shortcut: "hw"
+    };
+    argPars.addCommand("hello", hello);
+    const expected = new Map([
+        ["hello", "Hello World"]
+    ]);
+    const result = argPars.parse(["--hello", "Hello World"]);
+    // console.log(argPars.parse(["--hello", "Hello World"]));
+    assert.deepEqual(result, expected);
+});
 
-// ava("Name argument missing in addCommand method", (assert) => {
+ava("Parse: shortcut & multiple arg", (assert) => {
+    const argPars = new ArgParser("0.1.0");
+    const shortcut = {
+        description: "shortcut",
+        defaultVal: "shortcut",
+        shortcut: "s"
+    };
+    argPars.addCommand("shortcut", shortcut);
+    const expected = new Map([
+        ["shortcut", ["20", "50"]]
+    ]);
+    const result = argPars.parse(["-s", "20", "50"]);
+    assert.deepEqual(result, expected);
+});
+
+ava("Parse: Command with no arg", (assert) => {
+    const argPars = new ArgParser("0.1.0");
+    const noArg = {
+        description: "No Args",
+        shortcut: "n"
+    };
+    argPars.addCommand("noArg", noArg);
+    const expected = new Map([
+        ["noArg", true]
+    ]);
+    const result = argPars.parse(["-n"]);
+    assert.deepEqual(result, expected);
+});
+
+ava("Parse: throw TypeError type expected number and get a string", (assert) => {
+    const argPars = new ArgParser("0.1.0");
+    const type = {
+        description: "Give a type",
+        defaultVal: 25,
+        type: "number"
+    };
+    argPars.addCommand("type", type);
+    const error = assert.throws(() => {
+        argPars.parse(["--type", "Wrong arg type", "--fakeCmd"]);
+    }, TypeError);
+    assert.is(error.message, "Arguments of type must be type of number");
+});
+
+ava("Parse: throw TypeError type expected String and get a Number", (assert) => {
+    const argPars = new ArgParser("0.1.0");
+    const type = {
+        description: "Give a type",
+        defaultVal: 50,
+        type: "string"
+    };
+    argPars.addCommand("type", type);
+    const err = assert.throws(() => {
+        argPars.parse(["--type"]);
+    }, TypeError);
+    assert.is(err.message, "Arguments of type must be type of string");
+});
+
+ava("parse: fake command", (assert) => {
+    const argPars = new ArgParser("0.1.0");
+    argPars.parse(["--fakeCmd", "--fakecmd2"]);
+    assert.pass();
+});
+
+// Path to package.json problem : no such file or directory ....
+// ava("help method", (assert) => {
+//     const argPars = new ArgParser("0.1.0");
+//     argPars.help();
 //     assert.pass();
 // });
-/*
-
-
-// console.log(argPars.shortcuts);
-const result = argPars.parse();
-console.log(result);
-// console.log(argPars.parsedArg);
-// console.log(argPars.commands);
-*/
+// Version et help test problem : process.exit(0)
+// ava("Parse : version", (assert) => {
+//     const argPars = new ArgParser("0.1.0");
+//     // const y = assert.notThrows(, "Message");
+//     // console.log(y);
+//     argPars.parse(["--version"]);
+//     assert.pass();
+// });

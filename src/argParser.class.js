@@ -18,7 +18,10 @@ const is = require("@slimio/is");
 class ArgParser {
     /**
      * @constructs ArgParser
-     * @param {String} version Set version
+     * @param {!String} version Set version
+     *
+     * @throws {Error}
+     *
      */
     constructor(version) {
         this.commands = new Map();
@@ -26,6 +29,9 @@ class ArgParser {
             ["h", "help"],
             ["v", "version"]
         ]);
+        if (is.nullOrUndefined(version)) {
+            throw new Error("You must precise the version of argParse used");
+        }
         this.version = version;
     }
 
@@ -87,10 +93,10 @@ class ArgParser {
      * Parse and verify if arguments passed in command line are correct commands.
      * This method fill in the parsedArg attribute.
      * If version or help are present, parse method will execute the function and stop the programme.
-     * @param {String[]} [argv] list of command inputted
+     * @param {String[]} [argv] list of command and argument of command inputted
      *
      * @throws {Error}
-     * 
+     *
      * @returns {Map} result
      *
      * @version 0.1.0
@@ -112,11 +118,11 @@ class ArgParser {
             // if version or help are present execute the function and stop the programme
             if (key === "version") {
                 console.log(`v${this.version}`);
-                process.exit(0);
+                process.exit(1);
             }
             else if (key === "help") {
                 this.help();
-                process.exit(0);
+                process.exit(1);
             }
         };
 
@@ -146,7 +152,7 @@ class ArgParser {
             const { type, defaultVal } = this.commands.get(commandName);
 
             if (E_TYPES.has(type) && E_TYPES.get(type)(values)) {
-                throw new Error(`Arguments of ${commandName} must be type of ${type}`);
+                throw new TypeError(`Arguments of ${commandName} must be type of ${type}`);
             }
 
             if (values.length === 0) {
