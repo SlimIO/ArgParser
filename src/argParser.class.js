@@ -1,6 +1,5 @@
 // Require Node.JS dependencies
 const { readFileSync } = require("fs");
-const { join } = require("path");
 
 // Require Third-party dependencies
 const is = require("@slimio/is");
@@ -36,7 +35,7 @@ class ArgParser {
     }
 
     /**
-     * Adds a command to the existing command list
+     * Adds a command to the command list. All command that will not be in this list will be ignored.
      *
      * @param {!String} name name of command
      *
@@ -91,7 +90,7 @@ class ArgParser {
 
     /**
      * Parse and verify if arguments passed in command line are correct commands.
-     * This method fill in the parsedArg attribute.
+     * This method return a Map with all authorized command with their arguments.
      * If version or help are present, parse method will execute the function and stop the programme.
      * @param {String[]} [argv] list of command and argument of command inputted
      *
@@ -146,7 +145,7 @@ class ArgParser {
             ["string", (val) => typeof val !== "string"],
             ["array", (val) => !Array.isArray(val)]
         ]);
-        console.log(parsedArg);
+        // console.log(parsedArg);
 
         for (const [commandName, values] of parsedArg) {
             if (!this.commands.has(commandName)) {
@@ -154,7 +153,7 @@ class ArgParser {
             }
 
             let { type, defaultVal } = this.commands.get(commandName);
-            type = type.toLowerCase();
+            type = !is.nullOrUndefined(type) ? type.toLowerCase() : null;
 
             if (E_TYPES.has(type) && E_TYPES.get(type)(values.length === 0 ? defaultVal : values)) {
                 throw new TypeError(`Arguments of ${commandName} must be type of ${type}`);
@@ -173,14 +172,17 @@ class ArgParser {
 
     /**
      * displays informations about the addon and all the arguments that the addon can take in the console
-     * @param {String} [packageJson=null] Path to package.json
+     * @param {!String} [packageJson=null] Path to package.json
      * @function help
      * @return {void}
      * @version 0.1.0
     */
-    help() {
+    help(packageJson = null) {
+        if (is.nullOrUndefined(packageJson)) {
+            throw new Error("You must specify the path to the package");
+        }
         // read the package.json to get name of addon and his description & print it
-        const buf = readFileSync(join(__dirname, "package.json"));
+        const buf = readFileSync(packageJson);
         const { name, description } = JSON.parse(buf.toString());
 
         console.log(`Usage: ${name} [option]\n\n${description}\n\noptions:`);

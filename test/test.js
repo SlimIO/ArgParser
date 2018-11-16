@@ -1,5 +1,7 @@
 // Require internal Dependenties
 const ArgParser = require("../src/argParser.class");
+const { join, parse } = require("path");
+
 // Require Node.js Dependenties
 
 // Require third-party Dependenties
@@ -156,11 +158,26 @@ ava("parse: fake command", (assert) => {
 });
 
 // Path to package.json problem : no such file or directory ....
-// ava("help method", (assert) => {
-//     const argPars = new ArgParser("0.1.0");
-//     argPars.help();
-//     assert.pass();
-// });
+ava("help method", (assert) => {
+    const argPars = new ArgParser("0.1.0");
+    const pth = join(parse(__dirname).dir, "package.json");
+    const hello = {
+        description: "Say hello World",
+        defaultVal: "hello World",
+        shortcut: "hw"
+    };
+    argPars.addCommand("hello", hello);
+    argPars.help(pth);
+    assert.pass();
+});
+
+ava("help without path to package.json", (assert) => {
+    const argPars = new ArgParser("0.1.0");
+    const error = assert.throws(() => {
+        argPars.help();
+    }, Error);
+    assert.is(error.message, "You must specify the path to the package");
+});
 // Version et help test problem : process.exit(0)
 // ava("Parse : version", (assert) => {
 //     const argPars = new ArgParser("0.1.0");
