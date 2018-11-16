@@ -44,7 +44,7 @@ class ArgParser {
      * @param {String=} options.description Description of what the argument provide
      * @param {String=} options.shortcut Shortcut of argument
      * @param {String|Number|Boolean=} options.defaultVal Defalt value of the command
-     * @param {String=} options.type Argument type of commands
+     * @param {String=} options.type Argument type of commands. Must be in lower case
      *
      * @throws {TypeError}
      *
@@ -143,15 +143,20 @@ class ArgParser {
         const result = new Map();
         const E_TYPES = new Map([
             ["number", (val) => Number.isNaN(Number(val))],
-            ["string", (val) => typeof val !== "string"]
+            ["string", (val) => typeof val !== "string"],
+            ["array", (val) => !Array.isArray(val)]
         ]);
+        console.log(parsedArg);
+
         for (const [commandName, values] of parsedArg) {
             if (!this.commands.has(commandName)) {
                 continue;
             }
-            const { type, defaultVal } = this.commands.get(commandName);
 
-            if (E_TYPES.has(type) && E_TYPES.get(type)(values)) {
+            let { type, defaultVal } = this.commands.get(commandName);
+            type = type.toLowerCase();
+
+            if (E_TYPES.has(type) && E_TYPES.get(type)(values.length === 0 ? defaultVal : values)) {
                 throw new TypeError(`Arguments of ${commandName} must be type of ${type}`);
             }
 
