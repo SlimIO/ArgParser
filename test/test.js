@@ -6,16 +6,24 @@ const { join, parse } = require("path");
 
 // Require third-party Dependenties
 const ava = require("ava");
+const pth = join(parse(__dirname).dir, "package.json");
 
-ava("constructor: missed arg", (assert) => {
-    const err = assert.throws(() =>{
+ava("constructor: missed version argument", (assert) => {
+    const err = assert.throws(() => {
         new ArgParser();
     }, Error);
     assert.is(err.message, "You must precise the version of argParse used");
 });
 
+ava("constructor: missed packagePath argument", (assert) => {
+    const err = assert.throws(() => {
+        new ArgParser("0.1.0");
+    }, Error);
+    assert.is(err.message, "You must precise the path of the package.json file");
+});
+
 ava("AddCommand: throw error, argument name required", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const errorNamedCommand = assert.throws(() => {
         argPars.addCommand();
     }, Error);
@@ -23,7 +31,7 @@ ava("AddCommand: throw error, argument name required", (assert) => {
 });
 
 ava("AddCommand: throw TypeError, argument name must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const NameString = assert.throws(() => {
         argPars.addCommand(21, {});
     }, TypeError);
@@ -31,7 +39,7 @@ ava("AddCommand: throw TypeError, argument name must be a string", (assert) => {
 });
 
 ava("AddCommand: throw TypeError, argument options.shortcut must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const nameString = assert.throws(() => {
         argPars.addCommand("test", {
             shortcut: 1
@@ -41,7 +49,7 @@ ava("AddCommand: throw TypeError, argument options.shortcut must be a string", (
 });
 
 ava("addCommand: throw typeError, options.type param must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const typeStr = assert.throws(() => {
         argPars.addCommand("test", {
             type: 1
@@ -51,7 +59,7 @@ ava("addCommand: throw typeError, options.type param must be a string", (assert)
 });
 
 ava("addCommand: throw typeError, options.description param must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const descrStr = assert.throws(() => {
         argPars.addCommand("test", {
             description: 1
@@ -61,7 +69,7 @@ ava("addCommand: throw typeError, options.description param must be a string", (
 });
 
 ava("AddCommand: Duplicate command name", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const DupliCmdName = assert.throws(() => {
         argPars.addCommand("test", {});
         argPars.addCommand("test", {});
@@ -70,7 +78,7 @@ ava("AddCommand: Duplicate command name", (assert) => {
 });
 
 ava("AddCommand: Duplicate shortcut", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const DupliCmdName = assert.throws(() => {
         argPars.addCommand("test", { shortcut: "x" });
         argPars.addCommand("testy", { shortcut: "x" });
@@ -79,7 +87,7 @@ ava("AddCommand: Duplicate shortcut", (assert) => {
 });
 
 ava("Parse: Hello World", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const hello = {
         description: "Say hello World",
         defaultVal: "hello World",
@@ -95,7 +103,7 @@ ava("Parse: Hello World", (assert) => {
 });
 
 ava("Parse: shortcut & multiple arg", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const shortcut = {
         description: "shortcut",
         defaultVal: "shortcut",
@@ -110,7 +118,7 @@ ava("Parse: shortcut & multiple arg", (assert) => {
 });
 
 ava("Parse: Command with no arg", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const noArg = {
         description: "No Args",
         shortcut: "n"
@@ -124,7 +132,7 @@ ava("Parse: Command with no arg", (assert) => {
 });
 
 ava("Parse: throw TypeError type expected number and get a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const type = {
         description: "Give a type",
         defaultVal: 25,
@@ -138,7 +146,7 @@ ava("Parse: throw TypeError type expected number and get a string", (assert) => 
 });
 
 ava("Parse: throw TypeError type expected String and get a Number", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const type = {
         description: "Give a type",
         defaultVal: 50,
@@ -152,15 +160,15 @@ ava("Parse: throw TypeError type expected String and get a Number", (assert) => 
 });
 
 ava("parse: fake command", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     argPars.parse(["--fakeCmd", "--fakecmd2"]);
     assert.pass();
 });
 
 // Path to package.json problem : no such file or directory ....
 ava("help method", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const pth = join(parse(__dirname).dir, "package.json");
+    const argPars = new ArgParser("0.1.0", pth);
+    
     const hello = {
         description: "Say hello World",
         defaultVal: "hello World",
@@ -172,7 +180,7 @@ ava("help method", (assert) => {
 });
 
 ava("help without path to package.json", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+    const argPars = new ArgParser("0.1.0", pth);
     const error = assert.throws(() => {
         argPars.help();
     }, Error);
@@ -180,7 +188,7 @@ ava("help without path to package.json", (assert) => {
 });
 // Version et help test problem : process.exit(0)
 // ava("Parse : version", (assert) => {
-//     const argPars = new ArgParser("0.1.0");
+//     const argPars = new ArgParser("0.1.0", pth);
 //     // const y = assert.notThrows(, "Message");
 //     // console.log(y);
 //     argPars.parse(["--version"]);
