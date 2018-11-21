@@ -72,5 +72,4 @@ typings/
 # Serverless directories
 .serverless
 
-src/iterateObj.js
-src/lab.js
+docs/
