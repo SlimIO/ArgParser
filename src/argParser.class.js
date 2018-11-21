@@ -1,6 +1,3 @@
-// Require Node.JS dependencies
-const { readFileSync } = require("fs");
-
 // Require Third-party dependencies
 const is = require("@slimio/is");
 
@@ -15,30 +12,28 @@ const E_TYPES = new Map([
 ]);
 
 /**
+ * @version 0.1.0
+ *
  * @class ArgParser
  * @classdesc Parse arguments in command line for SlimIO projects
  *
  * @property {Map} commands all commands accepted to be parsed. Commands are define by developper.
  * @property {Map} shortcuts all existing shortcut with name associated to avoid duplicating them.
  * @property {String} version Current version of ArgParser.
- *
- * @version 0.1.0
+ * @property {String} description CLI Description
  */
 class ArgParser {
 
     /**
      * @constructs ArgParser
      * @param {!String} version Set version
-     * @param {!String} packagePath Path to the package.json file
+     * @param {String} [description] CLI Description
      *
      * @throws {Error}
      */
-    constructor(version, packagePath) {
+    constructor(version, description = "") {
         if (is.nullOrUndefined(version)) {
             throw new Error("You must precise the version of argParse used");
-        }
-        if (is.nullOrUndefined(packagePath)) {
-            throw new Error("You must precise the path of the package.json file");
         }
 
         this.commands = new Map();
@@ -47,7 +42,7 @@ class ArgParser {
             ["v", "version"]
         ]);
         this.version = version;
-        this.packagePath = packagePath;
+        this.description = description;
     }
 
     /**
@@ -136,8 +131,7 @@ class ArgParser {
                 process.exit(1);
             }
             else if (key === "help") {
-                this.help(this.packagePath);
-                process.exit(1);
+                this.showHelp();
             }
         };
 
@@ -183,28 +177,24 @@ class ArgParser {
     /**
      * @version 0.1.0
      *
-     * @method help
+     * @private
+     * @method showHelp
      * @desc displays informations about the addon and all the arguments that the addon can take in the console
      * @memberof ArgParser#
-     * @param {!String} packageJson Path to package.json
      * @return {void}
      *
      * @throws {Error}
     */
-    help(packageJson) {
-        if (!is.string(packageJson)) {
-            throw new Error("You must specify the path to the package");
-        }
+    showHelp() {
+        console.log(`Usage: ${process.argv[1]} [option]\n`);
+        console.log(`${this.description}\n\noptions:`);
 
-        // read the package.json to get name of addon and his description & print it
-        const buf = readFileSync(packageJson);
-        const { name, description } = JSON.parse(buf.toString());
-
-        console.log(`Usage: ${name} [option]\n\n${description}\n\noptions:`);
         for (const command of this.commands) {
             console.log(`\t-${command.shortcut}, --${command.name}`);
             console.log(`\t\t${command.description}`);
         }
+
+        process.exit(1);
     }
 }
 
