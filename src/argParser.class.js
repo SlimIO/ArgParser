@@ -8,6 +8,12 @@ const is = require("@slimio/is");
  * @typedef {(Number|String|Boolean)} ArgValueType
  */
 
+const E_TYPES = new Map([
+    ["number", (val) => Number.isNaN(Number(val))],
+    ["string", (val) => typeof val !== "string"],
+    ["array", (val) => !Array.isArray(val)]
+]);
+
 /**
  * @class ArgParser
  * @classdesc Parse arguments in command line for SlimIO projects
@@ -153,13 +159,6 @@ class ArgParser {
 
         // STEP 2: Check parsedArg
         const result = new Map();
-        const E_TYPES = new Map([
-            ["number", (val) => Number.isNaN(Number(val))],
-            ["string", (val) => typeof val !== "string"],
-            ["array", (val) => !Array.isArray(val)]
-        ]);
-        // console.log(parsedArg);
-
         for (const [commandName, values] of parsedArg) {
             if (!this.commands.has(commandName)) {
                 continue;
