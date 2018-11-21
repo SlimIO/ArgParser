@@ -1,5 +1,5 @@
 {
-  "name": "@slimio/ArgParser",
+  "name": "@slimio/arg-parser",
   "version": "0.1.0",
   "description": "SlimIO argument parser",
   "main": "index.js",
