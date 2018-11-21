@@ -29,6 +29,14 @@
     "coverage": "nyc ava",
     "report": "nyc report --reporter=html"
   },
+  "nyc": {
+    "check-coverage": true,
+    "per-file": false,
+    "lines": 98,
+    "statements": 98,
+    "functions": 98,
+    "branches": 90
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SlimIO/ArgParser.git"
