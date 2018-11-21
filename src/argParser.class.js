@@ -64,46 +64,42 @@ class ArgParser {
      * @param {ArgValueType=} options.defaultVal Defalt value of the command
      * @param {String=} options.type Argument type of commands. Must be in lower case
      *
-     * @returns {void}
+     * @returns {ArgParser}
      *
      * @throws {Error}
      * @throws {TypeError}
      */
     addCommand(name, options) {
-        // Manage Errors
-        if (is.nullOrUndefined(name)) {
-            throw new Error("you must name your command");
-        }
         if (!is.string(name)) {
             throw new TypeError("name param must be a string");
         }
+        if (!is.plainObject(options)) {
+            throw new TypeError("options should be a plain JavaScript Object!");
+        }
 
-        // check duplicate name
+        if (!is.string(options.shortcut)) {
+            throw new TypeError("options.shortcut param must be a string");
+        }
+        if (!is.string(options.type)) {
+            throw new TypeError("options.type param must be a string");
+        }
+        if (!is.string(options.description)) {
+            throw new TypeError("options.description param must be a string");
+        }
+
         if (this.commands.has(name)) {
             throw new Error(`Duplicate command nammed "${name}"`);
         }
 
-        if (!is.nullOrUndefined(options)) {
-
-            if (!is.string(options.shortcut) && !is.nullOrUndefined(options.shortcut)) {
-                throw new TypeError("options.shortcut param must be a string");
-            }
-            if (!is.string(options.type) && !is.nullOrUndefined(options.type)) {
-                throw new TypeError("options.type param must be a string");
-            }
-            if (!is.string(options.description) && !is.nullOrUndefined(options.description)) {
-                throw new TypeError("options.description param must be a string");
-            }
-
-            // check duplicate shortcut
-            if (this.shortcuts.has(options.shortcut)) {
-                throw new Error(`Duplicate shortcut nammed "${options.shortcut}"`);
-            }
-
-            this.shortcuts.set(options.shortcut, name);
+        // check duplicate shortcut
+        if (this.shortcuts.has(options.shortcut)) {
+            throw new Error(`Duplicate shortcut nammed "${options.shortcut}"`);
         }
 
+        this.shortcuts.set(options.shortcut, name);
         this.commands.set(name, options);
+
+        return this;
     }
 
     /**
