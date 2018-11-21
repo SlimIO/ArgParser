@@ -1,12 +1,19 @@
-// Require internal Dependenties
-const ArgParser = require("../src/argParser.class");
-const { join, parse } = require("path");
-
 // Require Node.js Dependenties
+const { join } = require("path");
 
-// Require third-party Dependenties
+// Require Third-party Dependenties
 const ava = require("ava");
-const pth = join(parse(__dirname).dir, "package.json");
+
+// Require Internal Dependencies
+const ArgParser = require("../src/argParser.class");
+
+// CONSTANTS
+const PKG_PATH = join(__dirname, "package.json");
+const DEFAULT_CMD = {
+    shortcut: "l",
+    type: "string",
+    description: ""
+};
 
 ava("constructor: missed version argument", (assert) => {
     const err = assert.throws(() => {
@@ -22,24 +29,16 @@ ava("constructor: missed packagePath argument", (assert) => {
     assert.is(err.message, "You must precise the path of the package.json file");
 });
 
-ava("AddCommand: throw error, argument name required", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+ava("AddCommand: throw TypeError, argument name must be a string", (assert) => {
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const errorNamedCommand = assert.throws(() => {
         argPars.addCommand();
-    }, Error);
-    assert.is(errorNamedCommand.message, "you must name your command");
-});
-
-ava("AddCommand: throw TypeError, argument name must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
-    const NameString = assert.throws(() => {
-        argPars.addCommand(21, {});
     }, TypeError);
-    assert.is(NameString.message, "name param must be a string");
+    assert.is(errorNamedCommand.message, "name param must be a string");
 });
 
 ava("AddCommand: throw TypeError, argument options.shortcut must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const nameString = assert.throws(() => {
         argPars.addCommand("test", {
             shortcut: 1
@@ -49,9 +48,10 @@ ava("AddCommand: throw TypeError, argument options.shortcut must be a string", (
 });
 
 ava("addCommand: throw typeError, options.type param must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const typeStr = assert.throws(() => {
         argPars.addCommand("test", {
+            shortcut: "l",
             type: 1
         });
     }, TypeError);
@@ -59,9 +59,11 @@ ava("addCommand: throw typeError, options.type param must be a string", (assert)
 });
 
 ava("addCommand: throw typeError, options.description param must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const descrStr = assert.throws(() => {
         argPars.addCommand("test", {
+            shortcut: "l",
+            type: "string",
             description: 1
         });
     }, TypeError);
@@ -69,25 +71,25 @@ ava("addCommand: throw typeError, options.description param must be a string", (
 });
 
 ava("AddCommand: Duplicate command name", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const DupliCmdName = assert.throws(() => {
-        argPars.addCommand("test", {});
-        argPars.addCommand("test", {});
+        argPars.addCommand("test", DEFAULT_CMD);
+        argPars.addCommand("test", DEFAULT_CMD);
     }, Error);
     assert.is(DupliCmdName.message, "Duplicate command nammed \"test\"");
 });
 
 ava("AddCommand: Duplicate shortcut", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const DupliCmdName = assert.throws(() => {
-        argPars.addCommand("test", { shortcut: "x" });
-        argPars.addCommand("testy", { shortcut: "x" });
+        argPars.addCommand("test", DEFAULT_CMD);
+        argPars.addCommand("testy", DEFAULT_CMD);
     }, Error);
-    assert.is(DupliCmdName.message, "Duplicate shortcut nammed \"x\"");
+    assert.is(DupliCmdName.message, "Duplicate shortcut nammed \"l\"");
 });
 
 ava("Parse: Hello World", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const hello = {
         description: "Say hello World",
         defaultVal: "hello World",
@@ -103,7 +105,7 @@ ava("Parse: Hello World", (assert) => {
 });
 
 ava("Parse: shortcut & multiple arg", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const shortcut = {
         description: "shortcut",
         defaultVal: "shortcut",
@@ -118,7 +120,7 @@ ava("Parse: shortcut & multiple arg", (assert) => {
 });
 
 ava("Parse: Command with no arg", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const noArg = {
         description: "No Args",
         shortcut: "n"
@@ -132,7 +134,7 @@ ava("Parse: Command with no arg", (assert) => {
 });
 
 ava("Parse: throw TypeError type expected number and get a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const type = {
         description: "Give a type",
         defaultVal: 25,
@@ -146,7 +148,7 @@ ava("Parse: throw TypeError type expected number and get a string", (assert) => 
 });
 
 ava("Parse: throw TypeError type expected String and get a Number", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const type = {
         description: "Give a type",
         defaultVal: 50,
@@ -160,35 +162,36 @@ ava("Parse: throw TypeError type expected String and get a Number", (assert) => 
 });
 
 ava("parse: fake command", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     argPars.parse(["--fakeCmd", "--fakecmd2"]);
     assert.pass();
 });
 
 // Path to package.json problem : no such file or directory ....
 ava("help method", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
-    
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
+
     const hello = {
         description: "Say hello World",
         defaultVal: "hello World",
         shortcut: "hw"
     };
     argPars.addCommand("hello", hello);
-    argPars.help(pth);
+    argPars.help(PKG_PATH);
     assert.pass();
 });
 
 ava("help without path to package.json", (assert) => {
-    const argPars = new ArgParser("0.1.0", pth);
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
     const error = assert.throws(() => {
         argPars.help();
     }, Error);
     assert.is(error.message, "You must specify the path to the package");
 });
+
 // Version et help test problem : process.exit(0)
 // ava("Parse : version", (assert) => {
-//     const argPars = new ArgParser("0.1.0", pth);
+//     const argPars = new ArgParser("0.1.0", PKG_PATH);
 //     // const y = assert.notThrows(, "Message");
 //     // console.log(y);
 //     argPars.parse(["--version"]);
