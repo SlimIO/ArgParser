@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "SlimIO argument parser",
   "main": "index.js",
+  "engines": {
+    "node": ">=10"
+  },
   "dependencies": {
     "@slimio/is": "^1.1.0"
   },
