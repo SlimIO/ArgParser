@@ -5,6 +5,10 @@ const { readFileSync } = require("fs");
 const is = require("@slimio/is");
 
 /**
+ * @typedef {(Number|String|Boolean)} ArgValueType
+ */
+
+/**
  * @class ArgParser
  * @classdesc Parse arguments in command line for SlimIO projects
  *
@@ -15,13 +19,13 @@ const is = require("@slimio/is");
  * @version 0.1.0
  */
 class ArgParser {
+
     /**
      * @constructs ArgParser
      * @param {!String} version Set version
      * @param {!String} packagePath Path to the package.json file
      *
      * @throws {Error}
-     *
      */
     constructor(version, packagePath) {
         this.commands = new Map();
@@ -40,21 +44,23 @@ class ArgParser {
     }
 
     /**
-     * Adds a command to the command list. All command that will not be in this list will be ignored.
+     * @version 0.1.0
+     *
+     * @method addCommand
+     * @desc Adds a command to the command list. All command that will not be in this list will be ignored.
+     * @memberof ArgParser#
      *
      * @param {!String} name name of command
-     *
      * @param {Object=} options Object represent options for command line
      * @param {String=} options.description Description of what the argument provide
      * @param {String=} options.shortcut Shortcut of argument
-     * @param {String|Number|Boolean=} options.defaultVal Defalt value of the command
+     * @param {ArgValueType=} options.defaultVal Defalt value of the command
      * @param {String=} options.type Argument type of commands. Must be in lower case
-     *
-     * @throws {TypeError}
      *
      * @returns {void}
      *
-     * @version 0.1.0
+     * @throws {Error}
+     * @throws {TypeError}
      */
     addCommand(name, options) {
         // Manage Errors
@@ -94,16 +100,18 @@ class ArgParser {
     }
 
     /**
-     * Parse and verify if arguments passed in command line are correct commands.
+     * @version 0.1.0
+     *
+     * @method parse
+     * @desc Parse and verify if arguments passed in command line are correct commands.
      * This method return a Map with all authorized command with their arguments.
      * If version or help are present, parse method will execute the function and stop the programme.
+     * @memberof ArgParser#
      * @param {String[]} [argv] list of command and argument of command inputted
      *
+     * @returns {Map<String, (ArgValueType | ArgValueType[])>} result
+     *
      * @throws {Error}
-     *
-     * @returns {Map} result
-     *
-     * @version 0.1.0
      */
     parse(argv = process.argv.slice(2)) {
         let currCmd = null;
@@ -176,16 +184,21 @@ class ArgParser {
     }
 
     /**
-     * displays informations about the addon and all the arguments that the addon can take in the console
-     * @param {!String} [packageJson=null] Path to package.json
-     * @function help
-     * @return {void}
      * @version 0.1.0
+     *
+     * @method help
+     * @desc displays informations about the addon and all the arguments that the addon can take in the console
+     * @memberof ArgParser#
+     * @param {!String} packageJson Path to package.json
+     * @return {void}
+     *
+     * @throws {Error}
     */
-    help(packageJson = null) {
-        if (is.nullOrUndefined(packageJson)) {
+    help(packageJson) {
+        if (!is.string(packageJson)) {
             throw new Error("You must specify the path to the package");
         }
+
         // read the package.json to get name of addon and his description & print it
         const buf = readFileSync(packageJson);
         const { name, description } = JSON.parse(buf.toString());
