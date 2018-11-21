@@ -34,17 +34,18 @@ class ArgParser {
      * @throws {Error}
      */
     constructor(version, packagePath) {
-        this.commands = new Map();
-        this.shortcuts = new Map([
-            ["h", "help"],
-            ["v", "version"]
-        ]);
         if (is.nullOrUndefined(version)) {
             throw new Error("You must precise the version of argParse used");
         }
         if (is.nullOrUndefined(packagePath)) {
             throw new Error("You must precise the path of the package.json file");
         }
+
+        this.commands = new Map();
+        this.shortcuts = new Map([
+            ["h", "help"],
+            ["v", "version"]
+        ]);
         this.version = version;
         this.packagePath = packagePath;
     }
