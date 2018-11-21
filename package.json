@@ -7,6 +7,7 @@
     "@slimio/is": "^1.1.0"
   },
   "devDependencies": {
+    "@escommunity/minami": "^1.0.0",
     "@slimio/eslint-config": "^1.1.8",
     "@types/node": "^10.11.5",
     "ava": "^0.25.0",
@@ -16,7 +17,7 @@
   },
   "scripts": {
     "test": "ava --verbose",
-    "doc": "jsdoc -c ./jsdoc.json -r",
+    "doc": "jsdoc -c ./jsdoc.json -r -R ./README.md -P ./package.json --verbose",
     "coverage": "nyc ava",
     "report": "nyc report --reporter=html"
   },
