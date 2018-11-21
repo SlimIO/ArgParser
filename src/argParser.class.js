@@ -165,6 +165,7 @@ class ArgParser {
                 continue;
             }
 
+            // eslint-disable-next-line
             let { type, defaultVal } = this.commands.get(commandName);
             type = !is.nullOrUndefined(type) ? type.toLowerCase() : null;
 
