@@ -22,19 +22,20 @@ ava("constructor: missed version argument", (assert) => {
     assert.is(err.message, "You must precise the version of argParse used");
 });
 
-ava("constructor: missed packagePath argument", (assert) => {
-    const err = assert.throws(() => {
-        new ArgParser("0.1.0");
-    }, Error);
-    assert.is(err.message, "You must precise the path of the package.json file");
-});
-
 ava("AddCommand: throw TypeError, argument name must be a string", (assert) => {
     const argPars = new ArgParser("0.1.0", PKG_PATH);
     const errorNamedCommand = assert.throws(() => {
         argPars.addCommand();
     }, TypeError);
     assert.is(errorNamedCommand.message, "name param must be a string");
+});
+
+ava("addCommand: TypeError, option is a plainObject", (assert) => {
+    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const err = assert.throws(() => {
+        argPars.addCommand("name", "not Plain Ojbect");
+    });
+    assert.is(err.message, "options should be a plain JavaScript Object!");
 });
 
 ava("AddCommand: throw TypeError, argument options.shortcut must be a string", (assert) => {
@@ -93,7 +94,8 @@ ava("Parse: Hello World", (assert) => {
     const hello = {
         description: "Say hello World",
         defaultVal: "hello World",
-        shortcut: "hw"
+        shortcut: "hw",
+        type: "string"
     };
     argPars.addCommand("hello", hello);
     const expected = new Map([
@@ -109,7 +111,8 @@ ava("Parse: shortcut & multiple arg", (assert) => {
     const shortcut = {
         description: "shortcut",
         defaultVal: "shortcut",
-        shortcut: "s"
+        shortcut: "s",
+        type: "array"
     };
     argPars.addCommand("shortcut", shortcut);
     const expected = new Map([
@@ -123,7 +126,8 @@ ava("Parse: Command with no arg", (assert) => {
     const argPars = new ArgParser("0.1.0", PKG_PATH);
     const noArg = {
         description: "No Args",
-        shortcut: "n"
+        shortcut: "n",
+        type: "boolean"
     };
     argPars.addCommand("noArg", noArg);
     const expected = new Map([
@@ -138,6 +142,7 @@ ava("Parse: throw TypeError type expected number and get a string", (assert) => 
     const type = {
         description: "Give a type",
         defaultVal: 25,
+        shortcut: "p",
         type: "number"
     };
     argPars.addCommand("type", type);
@@ -152,6 +157,7 @@ ava("Parse: throw TypeError type expected String and get a Number", (assert) => 
     const type = {
         description: "Give a type",
         defaultVal: 50,
+        shortcut: "y",
         type: "string"
     };
     argPars.addCommand("type", type);
@@ -168,32 +174,16 @@ ava("parse: fake command", (assert) => {
 });
 
 // Path to package.json problem : no such file or directory ....
-ava("help method", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+// ava("help method", (assert) => {
+//     const argPars = new ArgParser("0.1.0", "Desc du package");
 
-    const hello = {
-        description: "Say hello World",
-        defaultVal: "hello World",
-        shortcut: "hw"
-    };
-    argPars.addCommand("hello", hello);
-    argPars.help(PKG_PATH);
-    assert.pass();
-});
-
-ava("help without path to package.json", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
-    const error = assert.throws(() => {
-        argPars.help();
-    }, Error);
-    assert.is(error.message, "You must specify the path to the package");
-});
-
-// Version et help test problem : process.exit(0)
-// ava("Parse : version", (assert) => {
-//     const argPars = new ArgParser("0.1.0", PKG_PATH);
-//     // const y = assert.notThrows(, "Message");
-//     // console.log(y);
-//     argPars.parse(["--version"]);
+//     const hello = {
+//         description: "Say hello World",
+//         defaultVal: "hello World",
+//         shortcut: "hw",
+//         type: "string"
+//     };
+//     argPars.addCommand("hello", hello);
+//     argPars.showHelp(PKG_PATH);
 //     assert.pass();
 // });
