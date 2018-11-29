@@ -59,6 +59,19 @@ ava("addCommand: throw typeError, options.type param must be a string", (assert)
     assert.is(typeStr.message, "options.type param must be a string");
 });
 
+ava("addCommand: verify command type", (assert) => {
+    const argPars = new ArgParser("0.1.0");
+    const options = {
+        shortcut: "",
+        description: "",
+        type: "wrongType"
+    };
+    const err = assert.throws(() => {
+        argPars.addCommand("typeVerif", options);
+    });
+    assert.is(err.message, "wrongType is not a recognized type");
+});
+
 ava("addCommand: throw typeError, options.description param must be a string", (assert) => {
     const argPars = new ArgParser("0.1.0", PKG_PATH);
     const descrStr = assert.throws(() => {
@@ -91,13 +104,13 @@ ava("AddCommand: Duplicate shortcut", (assert) => {
 
 ava("Parse: Hello World", (assert) => {
     const argPars = new ArgParser("0.1.0", PKG_PATH);
-    const hello = {
+    const options = {
         description: "Say hello World",
         defaultVal: "hello World",
         shortcut: "hw",
         type: "string"
     };
-    argPars.addCommand("hello", hello);
+    argPars.addCommand("hello", options);
     const expected = new Map([
         ["hello", "Hello World"]
     ]);
@@ -108,13 +121,13 @@ ava("Parse: Hello World", (assert) => {
 
 ava("Parse: shortcut & multiple arg", (assert) => {
     const argPars = new ArgParser("0.1.0", PKG_PATH);
-    const shortcut = {
+    const options = {
         description: "shortcut",
         defaultVal: "shortcut",
         shortcut: "s",
         type: "array"
     };
-    argPars.addCommand("shortcut", shortcut);
+    argPars.addCommand("shortcut", options);
     const expected = new Map([
         ["shortcut", ["20", "50"]]
     ]);
@@ -124,12 +137,12 @@ ava("Parse: shortcut & multiple arg", (assert) => {
 
 ava("Parse: Command with no arg", (assert) => {
     const argPars = new ArgParser("0.1.0", PKG_PATH);
-    const noArg = {
+    const options = {
         description: "No Args",
         shortcut: "n",
         type: "boolean"
     };
-    argPars.addCommand("noArg", noArg);
+    argPars.addCommand("noArg", options);
     const expected = new Map([
         ["noArg", true]
     ]);
