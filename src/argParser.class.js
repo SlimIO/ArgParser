@@ -8,7 +8,8 @@ const is = require("@slimio/is");
 const E_TYPES = new Map([
     ["number", (val) => Number.isNaN(Number(val))],
     ["string", (val) => typeof val !== "string"],
-    ["array", (val) => !Array.isArray(val)]
+    ["array", (val) => !Array.isArray(val)],
+    ["boolean", (val) => val === true || val === false]
 ]);
 
 /**
@@ -80,6 +81,10 @@ class ArgParser {
         }
         if (!is.string(options.description)) {
             throw new TypeError("options.description param must be a string");
+        }
+
+        if (!E_TYPES.has(options.type)) {
+            throw new TypeError(`${options.type} is not a recognized type`);
         }
 
         if (this.commands.has(name)) {
