@@ -8,7 +8,6 @@ const ava = require("ava");
 const ArgParser = require("../src/argParser.class");
 
 // CONSTANTS
-const PKG_PATH = join(__dirname, "package.json");
 const DEFAULT_CMD = {
     shortcut: "l",
     type: "string",
@@ -18,12 +17,24 @@ const DEFAULT_CMD = {
 ava("constructor: missed version argument", (assert) => {
     const err = assert.throws(() => {
         new ArgParser();
-    }, Error);
+    }, TypeError);
     assert.is(err.message, "You must precise the version of argParse used");
+});
+ava("constructor: missed description argument", (assert) => {
+    assert.notThrows(() => {
+        new ArgParser("0.1.0");
+    }, TypeError);
+});
+
+ava("constructor: throw TypeError description", (assert) => {
+    const err = assert.throws(() => {
+        new ArgParser("0.1.0", 25);
+    }, TypeError);
+    assert.is(err.message, "description argument must be a string");
 });
 
 ava("AddCommand: throw TypeError, argument name must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const errorNamedCommand = assert.throws(() => {
         argPars.addCommand();
     }, TypeError);
@@ -31,7 +42,7 @@ ava("AddCommand: throw TypeError, argument name must be a string", (assert) => {
 });
 
 ava("addCommand: TypeError, option is a plainObject", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const err = assert.throws(() => {
         argPars.addCommand("name", "not Plain Ojbect");
     });
@@ -39,7 +50,7 @@ ava("addCommand: TypeError, option is a plainObject", (assert) => {
 });
 
 ava("AddCommand: throw TypeError, argument options.shortcut must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const nameString = assert.throws(() => {
         argPars.addCommand("test", {
             shortcut: 1
@@ -49,7 +60,7 @@ ava("AddCommand: throw TypeError, argument options.shortcut must be a string", (
 });
 
 ava("addCommand: throw typeError, options.type param must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const typeStr = assert.throws(() => {
         argPars.addCommand("test", {
             shortcut: "l",
@@ -73,7 +84,7 @@ ava("addCommand: verify command type", (assert) => {
 });
 
 ava("addCommand: throw typeError, options.description param must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const descrStr = assert.throws(() => {
         argPars.addCommand("test", {
             shortcut: "l",
@@ -85,16 +96,16 @@ ava("addCommand: throw typeError, options.description param must be a string", (
 });
 
 ava("AddCommand: Duplicate command name", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
-    const DupliCmdName = assert.throws(() => {
+    const argPars = new ArgParser("0.1.0");
+    const err = assert.throws(() => {
         argPars.addCommand("test", DEFAULT_CMD);
         argPars.addCommand("test", DEFAULT_CMD);
     }, Error);
-    assert.is(DupliCmdName.message, "Duplicate command nammed \"test\"");
+    assert.is(err.message, "Duplicate command nammed \"test\"");
 });
 
 ava("AddCommand: Duplicate shortcut", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const DupliCmdName = assert.throws(() => {
         argPars.addCommand("test", DEFAULT_CMD);
         argPars.addCommand("testy", DEFAULT_CMD);
@@ -103,7 +114,7 @@ ava("AddCommand: Duplicate shortcut", (assert) => {
 });
 
 ava("Parse: Hello World", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const options = {
         description: "Say hello World",
         defaultVal: "hello World",
@@ -120,7 +131,7 @@ ava("Parse: Hello World", (assert) => {
 });
 
 ava("Parse: shortcut & multiple arg", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const options = {
         description: "shortcut",
         defaultVal: "shortcut",
@@ -136,7 +147,7 @@ ava("Parse: shortcut & multiple arg", (assert) => {
 });
 
 ava("Parse: Command with no arg", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const options = {
         description: "No Args",
         shortcut: "n",
@@ -146,12 +157,13 @@ ava("Parse: Command with no arg", (assert) => {
     const expected = new Map([
         ["noArg", true]
     ]);
+
     const result = argPars.parse(["-n"]);
     assert.deepEqual(result, expected);
 });
 
 ava("Parse: throw TypeError type expected number and get a string", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const type = {
         description: "Give a type",
         defaultVal: 25,
@@ -166,7 +178,7 @@ ava("Parse: throw TypeError type expected number and get a string", (assert) => 
 });
 
 ava("Parse: throw TypeError type expected String and get a Number", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     const type = {
         description: "Give a type",
         defaultVal: 50,
@@ -181,7 +193,7 @@ ava("Parse: throw TypeError type expected String and get a Number", (assert) => 
 });
 
 ava("parse: fake command", (assert) => {
-    const argPars = new ArgParser("0.1.0", PKG_PATH);
+    const argPars = new ArgParser("0.1.0");
     argPars.parse(["--fakeCmd", "--fakecmd2"]);
     assert.pass();
 });
@@ -197,6 +209,6 @@ ava("parse: fake command", (assert) => {
 //         type: "string"
 //     };
 //     argPars.addCommand("hello", hello);
-//     argPars.showHelp(PKG_PATH);
+//     argPars.showHelp();
 //     assert.pass();
 // });
