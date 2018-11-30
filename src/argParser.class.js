@@ -33,8 +33,11 @@ class ArgParser {
      * @throws {Error}
      */
     constructor(version, description = "") {
-        if (is.nullOrUndefined(version)) {
-            throw new Error("You must precise the version of argParse used");
+        if (!is.string(version)) {
+            throw new TypeError("You must precise the version of argParse used");
+        }
+        if (!is.string(description)) {
+            throw new TypeError("description argument must be a string");
         }
 
         this.commands = new Map();
