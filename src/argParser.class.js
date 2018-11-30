@@ -1,8 +1,17 @@
-// Require Third-party dependencies
+// Require Node.js Dependencies
+const { basename } = require("path");
+
+// Require Third-party Dependencies
 const is = require("@slimio/is");
 
+/** @typedef {(Number|String|Boolean)} ArgValueType */
+
 /**
- * @typedef {(Number|String|Boolean)} ArgValueType
+ * @typedef {Object} Command
+ * @property {String} shortcut
+ * @property {String} type
+ * @property {String} description
+ * @property {*} defaultVal
  */
 
 const E_TYPES = new Map([
@@ -11,6 +20,9 @@ const E_TYPES = new Map([
     ["array", (val) => !Array.isArray(val)],
     ["boolean", (val) => val === true || val === false]
 ]);
+
+// eslint-disable-next-line
+const CMD_REG = /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|array)(=(?<defaultVal>.*))?\])?$/;
 
 /**
  * @version 0.1.0
@@ -40,7 +52,10 @@ class ArgParser {
             throw new TypeError("description argument must be a string");
         }
 
+        /** @type {Map<String, Command>} */
         this.commands = new Map();
+
+        /** @type {Map<String, String>} */
         this.shortcuts = new Map([
             ["h", "help"],
             ["v", "version"]
@@ -56,51 +71,37 @@ class ArgParser {
      * @desc Adds a command to the command list. All command that will not be in this list will be ignored.
      * @memberof ArgParser#
      *
-     * @param {!String} name name of command
-     * @param {Object=} options Object represent options for command line
-     * @param {String=} options.description Description of what the argument provide
-     * @param {String=} options.shortcut Shortcut of argument
-     * @param {ArgValueType=} options.defaultVal Defalt value of the command
-     * @param {String=} options.type Argument type of commands. Must be in lower case
-     *
+     * @param {!String} cmd name of command
+     * @param {String} [description] command description
      * @returns {ArgParser}
      *
      * @throws {Error}
      * @throws {TypeError}
      */
-    addCommand(name, options) {
-        if (!is.string(name)) {
-            throw new TypeError("name param must be a string");
-        }
-        if (!is.plainObject(options)) {
-            throw new TypeError("options should be a plain JavaScript Object!");
+    addCommand(cmd, description = "") {
+        if (typeof description !== "string") {
+            throw new TypeError("description param must be a string");
         }
 
-        if (!is.string(options.shortcut)) {
-            throw new TypeError("options.shortcut param must be a string");
+        // Retrieve command options
+        const result = CMD_REG.exec(cmd);
+        if (result === null) {
+            throw new Error("Unable to parse command");
         }
-        if (!is.string(options.type)) {
-            throw new TypeError("options.type param must be a string");
-        }
-        if (!is.string(options.description)) {
-            throw new TypeError("options.description param must be a string");
+        const { shortcut, name, type = "boolean", defaultVal } = result.groups;
+
+        // Add and check shortcut
+        if (typeof shortcut !== "undefined") {
+            if (this.shortcuts.has(shortcut)) {
+                throw new Error(`Duplicate shortcut nammed "${shortcut}"`);
+            }
+
+            this.shortcuts.set(shortcut, name);
         }
 
-        if (!E_TYPES.has(options.type)) {
-            throw new TypeError(`${options.type} is not a recognized type`);
-        }
-
-        if (this.commands.has(name)) {
-            throw new Error(`Duplicate command nammed "${name}"`);
-        }
-
-        // check duplicate shortcut
-        if (this.shortcuts.has(options.shortcut)) {
-            throw new Error(`Duplicate shortcut nammed "${options.shortcut}"`);
-        }
-
-        this.shortcuts.set(options.shortcut, name);
-        this.commands.set(name, options);
+        this.commands.set(name, {
+            shortcut, type, description, defaultVal
+        });
 
         return this;
     }
@@ -135,7 +136,7 @@ class ArgParser {
 
             // if version or help are present execute the function and stop the programme
             if (key === "version") {
-                console.log(`v${this.version}`);
+                console.log(this.version);
                 process.exit(1);
             }
             else if (key === "help") {
@@ -168,7 +169,7 @@ class ArgParser {
             type = !is.nullOrUndefined(type) ? type.toLowerCase() : null;
 
             if (E_TYPES.has(type) && E_TYPES.get(type)(values.length === 0 ? defaultVal : values)) {
-                throw new TypeError(`Arguments of ${commandName} must be type of ${type}`);
+                throw new Error(`<${commandName}> CLI argument must be type of ${type}`);
             }
 
             if (values.length === 0) {
@@ -178,6 +179,8 @@ class ArgParser {
                 result.set(commandName, values);
             }
         }
+
+        // STEP 3: Add default command Value
 
         return result;
     }
@@ -194,15 +197,15 @@ class ArgParser {
      * @throws {Error}
     */
     showHelp() {
-        console.log(`Usage: ${process.argv[1]} [option]\n`);
-        console.log(`${this.description}\n\noptions:`);
+        console.log(`Usage: node ${basename(process.argv[1])} [option]\n`);
+        console.log(`${this.description}\noptions:`);
 
-        for (const command of this.commands) {
-            console.log(`\t-${command.shortcut}, --${command.name}`);
-            console.log(`\t\t${command.description}`);
+        for (const [name, command] of this.commands.entries()) {
+            console.log(`\t-${command.shortcut}, --${name}`);
+            console.log(`\t${command.description}`);
         }
 
-        process.exit(1);
+        process.exit(0);
     }
 }
 
