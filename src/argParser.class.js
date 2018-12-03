@@ -222,12 +222,12 @@ class ArgParser {
     */
     showHelp() {
         console.log(`Usage: node ${basename(process.argv[1])} [option]`);
-        console.log(`${this.description}\noptions:`);
+        console.log(`${this.description}\n\noptions:`);
 
         for (const [name, { shortcut, description }] of this.commands.entries()) {
             const isShortCutDefined = typeof shortcut !== "undefined";
-            console.log(`\t${isShortCutDefined && `-${shortcut} ,`}--${name}`);
-            console.log(`\t${description}\n`);
+            console.log(`  ${isShortCutDefined ? `-${shortcut}, ` : ""}--${name}`);
+            console.log(`  ${description}\n`);
         }
 
         process.exit(0);
