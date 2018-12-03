@@ -195,7 +195,6 @@ class ArgParser {
     /**
      * @version 0.1.0
      *
-     * @private
      * @method showHelp
      * @desc displays informations about the addon and all the arguments that the addon can take in the console
      * @memberof ArgParser#
