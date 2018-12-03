@@ -73,3 +73,16 @@ Add a new command. cmd is a string pattern that will be matched against the foll
 
 ### showHelp()
 Stdout help instructions on how to use the CLI.
+
+```bash
+λ node replica_agent.js -h
+Usage: node replica_agent.js [option]
+SlimIO Agent CLI Utility
+
+options:
+  --verbose
+  Enable verbose mode!
+
+  -a, --autoreload
+  Configuration Autoreload delay in number
+```
