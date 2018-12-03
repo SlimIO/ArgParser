@@ -35,11 +35,16 @@ const CMD_REG = /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(
 class ArgParser {
 
     /**
+     * @version 0.1.0
+     *
      * @constructs ArgParser
-     * @param {!String} version Set version
+     * @param {!String} version CLI Version
      * @param {String} [description] CLI Description
      *
-     * @throws {Error}
+     * @throws {TypeError}
+     *
+     * @example
+     * const parser = new ArgParser("v1.0.0", "CLI Description");
      */
     constructor(version, description = "") {
         if (typeof version !== "string") {
@@ -67,13 +72,18 @@ class ArgParser {
      * @method addCommand
      * @desc Adds a command to the command list. All command that will not be in this list will be ignored.
      * @memberof ArgParser#
-     *
      * @param {!String} cmd name of command
      * @param {String} [description] command description
      * @returns {ArgParser}
      *
      * @throws {Error}
      * @throws {TypeError}
+     *
+     * @example
+     * const parser = new ArgParser("v1.0.0")
+     *     .addCommand("-p --product [number=10]", "product count")
+     *     .addCommand("-c --colors [array]", "Array of colors")
+     *     .addCommand("--verbose", "Enable verbose mode!");
      */
     addCommand(cmd, description = "") {
         if (typeof description !== "string") {
@@ -113,15 +123,23 @@ class ArgParser {
      *
      * @method parse
      * @desc Parse and verify if arguments passed in command line are correct commands.
-     * This method return a Map with all authorized command with their arguments.
-     * If version or help are present, parse method will execute the function and stop the programme.
      * @memberof ArgParser#
      * @param {String[]} [argv] list of command and argument of command inputted
-     *
      * @returns {Map<String, (ArgValueType | ArgValueType[])>} result
      *
      * @throws {TypeError}
      * @throws {Error}
+     *
+     * @example
+     * const { strictEqual } = require("assert");
+     * const parser = new ArgParser("v1.0.0")
+     *     .addCommand("-c --colors [array]", "Array of colors")
+     *     .addCommand("--verbose", "Enable verbose mode!");
+     *
+     * const colors = ["red", "yellow"];
+     * const result = parser.parse(["-c" , ...colors, "--verbose"]);
+     * strictEqual(result.get("verbose"), true);
+     * strictEqual(result.get("colors").toString(), colors.toString());
      */
     parse(argv = process.argv.slice(2)) {
         if (!Array.isArray(argv)) {
@@ -196,7 +214,7 @@ class ArgParser {
      * @version 0.1.0
      *
      * @method showHelp
-     * @desc displays informations about the addon and all the arguments that the addon can take in the console
+     * @desc Displays informations about the addon and all the arguments that the addon can take in the console
      * @memberof ArgParser#
      * @return {void}
      *
