@@ -1,15 +1,12 @@
 // Require Node.js Dependencies
 const { basename } = require("path");
 
-// Require Third-party Dependencies
-const is = require("@slimio/is");
-
 /** @typedef {(Number|String|Boolean)} ArgValueType */
 
 /**
  * @typedef {Object} Command
- * @property {String} shortcut
  * @property {String} type
+ * @property {String} shortcut
  * @property {String} description
  * @property {*} defaultVal
  */
@@ -18,7 +15,7 @@ const E_TYPES = new Map([
     ["number", (val) => Number.isNaN(Number(val))],
     ["string", (val) => typeof val !== "string"],
     ["array", (val) => !Array.isArray(val)],
-    ["boolean", (val) => val === true || val === false]
+    ["boolean", (val) => typeof val !== "boolean"]
 ]);
 
 // eslint-disable-next-line
@@ -45,11 +42,11 @@ class ArgParser {
      * @throws {Error}
      */
     constructor(version, description = "") {
-        if (!is.string(version)) {
-            throw new TypeError("You must precise the version of argParse used");
+        if (typeof version !== "string") {
+            throw new TypeError("version must be a string");
         }
-        if (!is.string(description)) {
-            throw new TypeError("description argument must be a string");
+        if (typeof description !== "string") {
+            throw new TypeError("description must be a string");
         }
 
         /** @type {Map<String, Command>} */
@@ -80,7 +77,7 @@ class ArgParser {
      */
     addCommand(cmd, description = "") {
         if (typeof description !== "string") {
-            throw new TypeError("description param must be a string");
+            throw new TypeError("description must be a string");
         }
 
         // Retrieve command options
@@ -88,7 +85,8 @@ class ArgParser {
         if (result === null) {
             throw new Error("Unable to parse command");
         }
-        const { shortcut, name, type = "boolean", defaultVal } = result.groups;
+        const { shortcut, name, type = "boolean" } = result.groups;
+        let defaultVal = result.groups.defaultVal;
 
         // Add and check shortcut
         if (typeof shortcut !== "undefined") {
@@ -99,9 +97,13 @@ class ArgParser {
             this.shortcuts.set(shortcut, name);
         }
 
-        this.commands.set(name, {
-            shortcut, type, description, defaultVal
-        });
+        if (type === "boolean" && typeof defaultVal === "undefined") {
+            defaultVal = false;
+        }
+        else if (type === "number" && typeof defaultVal !== "undefined") {
+            defaultVal = Number(defaultVal);
+        }
+        this.commands.set(name, { shortcut, type, description, defaultVal });
 
         return this;
     }
@@ -118,9 +120,14 @@ class ArgParser {
      *
      * @returns {Map<String, (ArgValueType | ArgValueType[])>} result
      *
+     * @throws {TypeError}
      * @throws {Error}
      */
     parse(argv = process.argv.slice(2)) {
+        if (!Array.isArray(argv)) {
+            throw new TypeError("argv must be an array");
+        }
+
         let currCmd = null;
         let values = [];
         const parsedArg = new Map();
@@ -164,23 +171,23 @@ class ArgParser {
                 continue;
             }
 
-            // eslint-disable-next-line
-            let { type, defaultVal } = this.commands.get(commandName);
-            type = !is.nullOrUndefined(type) ? type.toLowerCase() : null;
+            const { type, defaultVal } = this.commands.get(commandName);
+            const value = values.length === 0 ? defaultVal || true : values;
 
-            if (E_TYPES.has(type) && E_TYPES.get(type)(values.length === 0 ? defaultVal : values)) {
+            if (E_TYPES.get(type)(value)) {
                 throw new Error(`<${commandName}> CLI argument must be type of ${type}`);
             }
-
-            if (values.length === 0) {
-                result.set(commandName, is.nullOrUndefined(defaultVal) ? true : defaultVal);
-            }
-            else {
-                result.set(commandName, values);
-            }
+            result.set(commandName, value);
         }
 
-        // STEP 3: Add default command Value
+        // STEP 3: Setup default commands values!
+        for (const [name, cmd] of this.commands.entries()) {
+            if (result.has(name) || typeof cmd.defaultVal === "undefined") {
+                continue;
+            }
+
+            result.set(name, cmd.defaultVal);
+        }
 
         return result;
     }
@@ -197,12 +204,13 @@ class ArgParser {
      * @throws {Error}
     */
     showHelp() {
-        console.log(`Usage: node ${basename(process.argv[1])} [option]\n`);
+        console.log(`Usage: node ${basename(process.argv[1])} [option]`);
         console.log(`${this.description}\noptions:`);
 
-        for (const [name, command] of this.commands.entries()) {
-            console.log(`\t-${command.shortcut}, --${name}`);
-            console.log(`\t${command.description}`);
+        for (const [name, { shortcut, description }] of this.commands.entries()) {
+            const isShortCutDefined = typeof shortcut !== "undefined";
+            console.log(`\t${isShortCutDefined && `-${shortcut} ,`}--${name}`);
+            console.log(`\t${description}\n`);
         }
 
         process.exit(0);

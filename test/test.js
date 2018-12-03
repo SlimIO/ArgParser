@@ -1,214 +1,167 @@
-// Require Node.js Dependenties
-const { join } = require("path");
-
 // Require Third-party Dependenties
 const ava = require("ava");
+const is = require("@slimio/is");
 
 // Require Internal Dependencies
 const ArgParser = require("../src/argParser.class");
 
-// CONSTANTS
-const DEFAULT_CMD = {
-    shortcut: "l",
-    type: "string",
-    description: ""
-};
-
-ava("constructor: missed version argument", (assert) => {
+ava("constructor: should throw 'version must be a string'", (assert) => {
     const err = assert.throws(() => {
         new ArgParser();
     }, TypeError);
-    assert.is(err.message, "You must precise the version of argParse used");
-});
-ava("constructor: missed description argument", (assert) => {
-    assert.notThrows(() => {
-        new ArgParser("0.1.0");
-    }, TypeError);
+    assert.is(err.message, "version must be a string");
 });
 
-ava("constructor: throw TypeError description", (assert) => {
+ava("constructor: should throw 'description must be a string'", (assert) => {
     const err = assert.throws(() => {
-        new ArgParser("0.1.0", 25);
+        new ArgParser("v1.0.0", 10);
     }, TypeError);
-    assert.is(err.message, "description argument must be a string");
+    assert.is(err.message, "description must be a string");
 });
 
-ava("AddCommand: throw TypeError, argument name must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const errorNamedCommand = assert.throws(() => {
-        argPars.addCommand();
-    }, TypeError);
-    assert.is(errorNamedCommand.message, "name param must be a string");
+ava("constructor: assert default property", (assert) => {
+    const parser = new ArgParser("v1.0.0", "hello world");
+
+    assert.is(parser.version, "v1.0.0");
+    assert.is(parser.description, "hello world");
+    assert.true(is.map(parser.commands));
+    assert.true(is.map(parser.shortcuts));
+    assert.is(parser.commands.size, 0);
+    assert.is(parser.shortcuts.size, 2);
+    assert.true(parser.shortcuts.has("h"));
+    assert.true(parser.shortcuts.has("v"));
 });
 
-ava("addCommand: TypeError, option is a plainObject", (assert) => {
-    const argPars = new ArgParser("0.1.0");
+ava("addCommand: should throw 'Unable to parse command'", (assert) => {
+    const parser = new ArgParser("v1.0.0");
     const err = assert.throws(() => {
-        argPars.addCommand("name", "not Plain Ojbect");
-    });
-    assert.is(err.message, "options should be a plain JavaScript Object!");
-});
-
-ava("AddCommand: throw TypeError, argument options.shortcut must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const nameString = assert.throws(() => {
-        argPars.addCommand("test", {
-            shortcut: 1
-        });
-    }, TypeError);
-    assert.is(nameString.message, "options.shortcut param must be a string");
-});
-
-ava("addCommand: throw typeError, options.type param must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const typeStr = assert.throws(() => {
-        argPars.addCommand("test", {
-            shortcut: "l",
-            type: 1
-        });
-    }, TypeError);
-    assert.is(typeStr.message, "options.type param must be a string");
-});
-
-ava("addCommand: verify command type", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const options = {
-        shortcut: "",
-        description: "",
-        type: "wrongType"
-    };
-    const err = assert.throws(() => {
-        argPars.addCommand("typeVerif", options);
-    });
-    assert.is(err.message, "wrongType is not a recognized type");
-});
-
-ava("addCommand: throw typeError, options.description param must be a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const descrStr = assert.throws(() => {
-        argPars.addCommand("test", {
-            shortcut: "l",
-            type: "string",
-            description: 1
-        });
-    }, TypeError);
-    assert.is(descrStr.message, "options.description param must be a string");
-});
-
-ava("AddCommand: Duplicate command name", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const err = assert.throws(() => {
-        argPars.addCommand("test", DEFAULT_CMD);
-        argPars.addCommand("test", DEFAULT_CMD);
+        parser.addCommand("zabllla");
     }, Error);
-    assert.is(err.message, "Duplicate command nammed \"test\"");
+    assert.is(err.message, "Unable to parse command");
 });
 
-ava("AddCommand: Duplicate shortcut", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const DupliCmdName = assert.throws(() => {
-        argPars.addCommand("test", DEFAULT_CMD);
-        argPars.addCommand("testy", DEFAULT_CMD);
-    }, Error);
-    assert.is(DupliCmdName.message, "Duplicate shortcut nammed \"l\"");
-});
-
-ava("Parse: Hello World", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const options = {
-        description: "Say hello World",
-        defaultVal: "hello World",
-        shortcut: "hw",
-        type: "string"
-    };
-    argPars.addCommand("hello", options);
-    const expected = new Map([
-        ["hello", "Hello World"]
-    ]);
-    const result = argPars.parse(["--hello", "Hello World"]);
-    // console.log(argPars.parse(["--hello", "Hello World"]));
-    assert.deepEqual(result, expected);
-});
-
-ava("Parse: shortcut & multiple arg", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const options = {
-        description: "shortcut",
-        defaultVal: "shortcut",
-        shortcut: "s",
-        type: "array"
-    };
-    argPars.addCommand("shortcut", options);
-    const expected = new Map([
-        ["shortcut", ["20", "50"]]
-    ]);
-    const result = argPars.parse(["-s", "20", "50"]);
-    assert.deepEqual(result, expected);
-});
-
-ava("Parse: Command with no arg", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const options = {
-        description: "No Args",
-        shortcut: "n",
-        type: "boolean"
-    };
-    argPars.addCommand("noArg", options);
-    const expected = new Map([
-        ["noArg", true]
-    ]);
-
-    const result = argPars.parse(["-n"]);
-    assert.deepEqual(result, expected);
-});
-
-ava("Parse: throw TypeError type expected number and get a string", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const type = {
-        description: "Give a type",
-        defaultVal: 25,
-        shortcut: "p",
-        type: "number"
-    };
-    argPars.addCommand("type", type);
-    const error = assert.throws(() => {
-        argPars.parse(["--type", "Wrong arg type", "--fakeCmd"]);
-    }, TypeError);
-    assert.is(error.message, "Arguments of type must be type of number");
-});
-
-ava("Parse: throw TypeError type expected String and get a Number", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    const type = {
-        description: "Give a type",
-        defaultVal: 50,
-        shortcut: "y",
-        type: "string"
-    };
-    argPars.addCommand("type", type);
+ava("addCommand: should throw 'description must be a string'", (assert) => {
+    const parser = new ArgParser("v1.0.0");
     const err = assert.throws(() => {
-        argPars.parse(["--type"]);
+        parser.addCommand("", 10);
     }, TypeError);
-    assert.is(err.message, "Arguments of type must be type of string");
+    assert.is(err.message, "description must be a string");
 });
 
-ava("parse: fake command", (assert) => {
-    const argPars = new ArgParser("0.1.0");
-    argPars.parse(["--fakeCmd", "--fakecmd2"]);
-    assert.pass();
+ava("addCommand: assert new entry", (assert) => {
+    const parser = new ArgParser("v1.0.0");
+
+    parser.addCommand("-p --product [number]", "Product command!");
+
+    assert.is(parser.commands.size, 1);
+    assert.true(parser.commands.has("product"));
+    assert.true(parser.shortcuts.has("p"));
+    assert.is(parser.shortcuts.get("p"), "product");
+
+    const entry = parser.commands.get("product");
+    assert.is(entry.description, "Product command!");
+    assert.is(entry.shortcut, "p");
+    assert.is(entry.defaultVal, undefined);
+    assert.is(entry.type, "number");
 });
 
-// Path to package.json problem : no such file or directory ....
-// ava("help method", (assert) => {
-//     const argPars = new ArgParser("0.1.0", "Desc du package");
+ava("addCommand: assert new entry without shortcut and description", (assert) => {
+    const parser = new ArgParser("v1.0.0");
 
-//     const hello = {
-//         description: "Say hello World",
-//         defaultVal: "hello World",
-//         shortcut: "hw",
-//         type: "string"
-//     };
-//     argPars.addCommand("hello", hello);
-//     argPars.showHelp();
-//     assert.pass();
+    parser.addCommand("--product [number=10]");
+    assert.is(parser.shortcuts.size, 2);
+    assert.false(parser.shortcuts.has("p"));
+
+    const entry = parser.commands.get("product");
+    assert.is(entry.description, "");
+    assert.is(entry.shortcut, undefined);
+    assert.is(entry.defaultVal, 10);
+    assert.is(entry.type, "number");
+});
+
+ava("addCommand: same shortcut twice should throw an error", (assert) => {
+    const parser = new ArgParser("v1.0.0");
+
+    parser.addCommand("-p --product");
+    const err = assert.throws(() => {
+        parser.addCommand("-p --police");
+    }, Error);
+    assert.is(err.message, "Duplicate shortcut nammed \"p\"");
+
+    assert.is(parser.shortcuts.size, 3);
+    assert.is(parser.commands.size, 1);
+    assert.true(parser.commands.has("product"));
+    assert.false(parser.commands.has("police"));
+});
+
+ava("parse: should throw 'dargv must be an array'", (assert) => {
+    const parser = new ArgParser("v1.0.0");
+    const err = assert.throws(() => {
+        parser.parse(10);
+    }, TypeError);
+    assert.is(err.message, "argv must be an array");
+});
+
+ava("parse: without any commands", (assert) => {
+    const parser = new ArgParser("v1.0.0");
+
+    const result = parser.parse([]);
+    assert.true(is.map(result));
+    assert.is(result.size, 0);
+});
+
+ava("parse: with two commands", (assert) => {
+    const parser = new ArgParser("v1.0.0")
+        .addCommand("-p --product [number=10]")
+        .addCommand("-t --truc [string]");
+
+    const result = parser.parse(["-p", "--truc", "hello world"]);
+    assert.true(is.map(result));
+    assert.is(result.size, 2);
+    assert.is(result.get("product"), 10);
+    assert.is(result.get("truc"), "hello world");
+});
+
+ava("parse: boolean command", (assert) => {
+    const parser = new ArgParser("v1.0.0")
+        .addCommand("-p --product");
+
+    const v1 = parser.parse(["-p"]);
+    assert.true(v1.get("product"));
+
+    const v2 = parser.parse([]);
+    assert.false(v2.get("product"));
+});
+
+ava("parse: array command", (assert) => {
+    const parser = new ArgParser("v1.0.0")
+        .addCommand("-c --colors [array]");
+
+    const colors = ["blue", "red", "yellow"];
+    const result = parser.parse(["-c", ...colors]);
+    assert.true(result.has("colors"));
+
+    assert.deepEqual(result.get("colors"), colors);
+});
+
+ava("parse: should throw a type error", (assert) => {
+    const parser = new ArgParser("v1.0.0")
+        .addCommand("--product [number]");
+
+    const err = assert.throws(() => {
+        parser.parse(["--product", "hello"]);
+    }, Error);
+    assert.is(err.message, "<product> CLI argument must be type of number");
+});
+
+// ava("showHelp: should stdout as expected", async(assert) => {
+//     assert.plan(1);
+//     process.once("exit", () => {
+//         assert.pass();
+//     });
+
+//     const parser = new ArgParser("v1.0.0", "CLI description!");
+//     parser.showHelp();
+
+//     await new Promise((resolve) => setTimeout(resolve, 10));
 // });
