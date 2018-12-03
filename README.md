@@ -59,6 +59,7 @@ $ node yourscript --help
 ### constructor(version: string, description?: string)
 Create a new ArgParser instance.
 
+- version is inteded to be use when the flag `-v` or `--version` is requested.
 - description describe the CLI itself and is intended to be used in **showHelp()**.
 
 ```js
@@ -69,6 +70,18 @@ new ArgParser("V1.0.0", "A super CLI!!");
 Add a new command. cmd is a string pattern that will be matched against the following regex:
 ```js
 /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|array)(=(?<defaultVal>.*))?\])?$/;
+```
+
+Take a look at the root directory `example` for more examples of how to use addCommand !
+```js
+const ArgParser = require("@slimio/arg-parser");
+
+const result = new ArgParser("v1.0.0", "SlimIO Agent CLI Utility")
+    .addCommand("--verbose", "Enable verbose mode!")
+    .addCommand("-a --autoreload [number=500]", "Configuration Autoreload delay in number")
+    .parse();
+
+console.log(result);
 ```
 
 ### showHelp()
