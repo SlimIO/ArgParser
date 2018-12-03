@@ -24,6 +24,7 @@ $ yarn add @slimio/arg-parser
 
 ## Usage example
 
+Create the following javascript script:
 ```js
 const { strictEqual } = require("assert");
 const ArgParser = require("@slimio/arg-parser");
@@ -32,10 +33,18 @@ const argv = new ArgParser("v1.0.0")
     .addCommand("-c --colors [array]", "Array of colors")
     .addCommand("--verbose", "Enable verbose mode!");
 
-const colors = ["red", "yellow"];
-const result = argv.parse(["-c" , ...colors, "--verbose"]);
-strictEqual(result.get("verbose"), true);
-strictEqual(result.get("colors").toString(), colors.toString());
+const result = argv.parse();
+console.log(result);
+```
+
+And then run the following command line:
+```bash
+$ node yourscript --colors red blue --verbose
+```
+
+For help run:
+```bash
+$ node yourscript --help
 ```
 
 ## API
