@@ -14,6 +14,11 @@ It does not aim to replace popular CLI lib like `yargs` or `commander`. Please, 
 - Only ship feature required for SlimIO.
 - Light and fast !
 
+## Features
+
+- Support number, string, boolean and array types.
+- Synchronous API.
+
 ## Getting Started
 
 This package is available in the Node Package Repository and can be easily installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or [yarn](https://yarnpkg.com).
