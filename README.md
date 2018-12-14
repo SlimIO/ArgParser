@@ -33,13 +33,13 @@ $ yarn add @slimio/arg-parser
 
 Create the following javascript script:
 ```js
-const ArgParser = require("@slimio/arg-parser");
+const { parseArg, argDefinition } = require("@slimio/arg-parser");
 
-const argv = new ArgParser("v1.0.0")
-    .addCommand("-c --colors [array]", "Array of colors")
-    .addCommand("--verbose", "Enable verbose mode!");
+const result = parseArg([
+    argDefinition("-c --colors [array]", "Array of colors"),
+    argDefinition("--verbose", "Enable verbose mode!")
+]);
 
-const result = argv.parse();
 console.log(result);
 ```
 
@@ -55,46 +55,33 @@ $ node yourscript --help
 
 ## API
 
-### constructor(version: string, description?: string)
-Create a new ArgParser instance.
-
-- version is inteded to be use when the flag `-v` or `--version` is requested.
-- description describe the CLI itself and is intended to be used in **showHelp()**.
-
-```js
-new ArgParser("V1.0.0", "A super CLI!!");
-```
-
-### addCommand(cmd: string, description?: string): ArgParser
-Add a new command. cmd is a string pattern that will be matched against the following regex:
+### argDefinition(cmd: string, description?: string): Command
+Generate a new Command definition. cmd argument is a string pattern that will be matched against the following regex:
 ```js
 /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|array)(=(?<defaultVal>.*))?\])?$/;
 ```
 
 Take a look at the root directory `example` for more examples of how to use addCommand !
 ```js
-const ArgParser = require("@slimio/arg-parser");
+const { parseArg, argDefinition } = require("@slimio/arg-parser");
 
-const result = new ArgParser("v1.0.0", "SlimIO Agent CLI Utility")
-    .addCommand("--verbose", "Enable verbose mode!")
-    .addCommand("-a --autoreload [number=500]", "Configuration Autoreload delay in number")
-    .parse();
-
-console.log(result);
+const result = parseArg([
+    argDefinition("--verbose", "Enable verbose mode!"),
+    argDefinition("-a --autoreload [number=500]", "Configuration Autoreload delay in number")
+]);
 ```
 
-### showHelp()
-Stdout help instructions on how to use the CLI.
-
-```bash
-λ node replica_agent.js -h
-Usage: node replica_agent.js [option]
-SlimIO Agent CLI Utility
-
-options:
-  --verbose
-  Enable verbose mode!
-
-  -a, --autoreload
-  Configuration Autoreload delay in number
+A command is described as follow on TypeScript:
+```ts
+interface Command {
+    name: string;
+    type: string;
+    description: string;
+    shortcut?: string;
+    defaultVal?: number | string | boolean | any[];
+}
 ```
+Feel free to redefine the wrapper as you want !
+
+### parseArg(argDefinitions: Command[], argv?: string[]): Map< string, any >
+Parse Argv (or any input array).
