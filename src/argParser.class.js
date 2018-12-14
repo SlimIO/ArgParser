@@ -87,19 +87,14 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
 
     // STEP 1: Parse argv
     function writeCommand() {
-        // replace shortcut by command name
-        const key = shortcuts.has(currCmd) ? shortcuts.get(currCmd) : currCmd;
-
-        const val = values.length === 1 ? values[0] : values;
-        parsedArg.set(key, val);
+        parsedArg.set(shortcuts.has(currCmd) ? shortcuts.get(currCmd) : currCmd,
+            values.length === 1 ? values[0] : values);
         values = [];
     }
 
     for (const arg of argv) {
         if (/^-{1,2}/g.test(arg)) {
-            if (currCmd !== null) {
-                writeCommand();
-            }
+            currCmd !== null && writeCommand();
             currCmd = arg.replace(/-/g, "");
         }
         else {
