@@ -8,13 +8,6 @@
  * @property {*} defaultVal
  */
 
-const E_TYPES = new Map([
-    ["number", (val) => Number.isNaN(Number(val))],
-    ["string", (val) => typeof val !== "string"],
-    ["array", (val) => !Array.isArray(val)],
-    ["boolean", (val) => typeof val !== "boolean"]
-]);
-
 // eslint-disable-next-line
 const CMD_REG = /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|array)(=(?<defaultVal>.*))?\])?$/;
 
@@ -125,6 +118,12 @@ class ArgParser {
             throw new TypeError("argv must be an array");
         }
 
+        const E_TYPES = new Map([
+            ["number", (val) => Number.isNaN(Number(val))],
+            ["string", (val) => typeof val !== "string"],
+            ["array", (val) => !Array.isArray(val)],
+            ["boolean", (val) => typeof val !== "boolean"]
+        ]);
         let currCmd = null;
         let values = [];
         const parsedArg = new Map();
