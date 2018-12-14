@@ -27,13 +27,8 @@ const CMD_REG = /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(
  * @returns {Command}
  *
  * @throws {Error}
- * @throws {TypeError}
  */
 function argDefinition(cmd, description = "") {
-    if (typeof description !== "string") {
-        throw new TypeError("description must be a string");
-    }
-
     // Retrieve command options
     const result = CMD_REG.exec(cmd);
     if (result === null) {
@@ -73,6 +68,7 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
     // Hydrate commands and shortcuts
     const commands = new Map();
     const shortcuts = new Map();
+    const parsedArg = new Map();
     for (const def of argDefinitions) {
         commands.set(def.name, def);
         if (typeof def.shortcut === "string") {
@@ -88,7 +84,6 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
     ]);
     let currCmd = null;
     let values = [];
-    const parsedArg = new Map();
 
     // STEP 1: Parse argv
     function writeCommand() {

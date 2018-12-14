@@ -18,13 +18,6 @@ ava("argDefinition: should throw 'Unable to parse command'", (assert) => {
     assert.is(err.message, "Unable to parse command");
 });
 
-ava("argDefinition: should throw 'description must be a string'", (assert) => {
-    const err = assert.throws(() => {
-        ArgParser.argDefinition("", 10);
-    }, TypeError);
-    assert.is(err.message, "description must be a string");
-});
-
 ava("argDefinition: assert new entry", (assert) => {
     const entry = ArgParser.argDefinition("-p --product [number]", "Product command!");
 
