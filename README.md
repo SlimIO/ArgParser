@@ -1,7 +1,7 @@
 # ArgParser
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/SlimIO/is/commit-activity)
 ![MIT](https://img.shields.io/github/license/mashape/apistatus.svg)
-![V1.0](https://img.shields.io/badge/version-0.1.0-blue.svg)
+![V1.0](https://img.shields.io/badge/version-0.2.0-blue.svg)
 ![0DEP](https://img.shields.io/badge/Dependencies-0-yellow.svg)
 
 Fast, Secure and light Command Line Argument parser for Node.js ! ArgParser was designed to be embedded in a SlimIO agent, most popular library was not matching our expectation of a light and secure Arg parser.
