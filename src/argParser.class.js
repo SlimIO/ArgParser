@@ -1,6 +1,3 @@
-// Require Node.js Dependencies
-const { basename } = require("path");
-
 /** @typedef {(Number|String|Boolean)} ArgValueType */
 
 /**
@@ -29,8 +26,6 @@ const CMD_REG = /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(
  *
  * @property {Map} commands all commands accepted to be parsed. Commands are define by developper.
  * @property {Map} shortcuts all existing shortcut with name associated to avoid duplicating them.
- * @property {String} version Current version of ArgParser.
- * @property {String} description CLI Description
  */
 class ArgParser {
 
@@ -38,32 +33,16 @@ class ArgParser {
      * @version 0.1.0
      *
      * @constructs ArgParser
-     * @param {!String} version CLI Version
-     * @param {String} [description] CLI Description
-     *
-     * @throws {TypeError}
      *
      * @example
-     * const parser = new ArgParser("v1.0.0", "CLI Description");
+     * const parser = new ArgParser();
      */
-    constructor(version, description = "") {
-        if (typeof version !== "string") {
-            throw new TypeError("version must be a string");
-        }
-        if (typeof description !== "string") {
-            throw new TypeError("description must be a string");
-        }
-
+    constructor() {
         /** @type {Map<String, Command>} */
         this.commands = new Map();
 
         /** @type {Map<String, String>} */
-        this.shortcuts = new Map([
-            ["h", "help"],
-            ["v", "version"]
-        ]);
-        this.version = version;
-        this.description = description;
+        this.shortcuts = new Map();
     }
 
     /**
@@ -158,15 +137,6 @@ class ArgParser {
             const val = values.length === 1 ? values[0] : values;
             parsedArg.set(key, val);
             values = [];
-
-            // if version or help are present execute the function and stop the programme
-            if (key === "version") {
-                console.log(this.version);
-                process.exit(1);
-            }
-            else if (key === "help") {
-                this.showHelp();
-            }
         };
 
         for (const arg of argv) {
@@ -208,29 +178,6 @@ class ArgParser {
         }
 
         return result;
-    }
-
-    /**
-     * @version 0.1.0
-     *
-     * @method showHelp
-     * @desc Displays informations about the addon and all the arguments that the addon can take in the console
-     * @memberof ArgParser#
-     * @return {void}
-     *
-     * @throws {Error}
-    */
-    showHelp() {
-        console.log(`Usage: node ${basename(process.argv[1])} [option]`);
-        console.log(`${this.description}\n\noptions:`);
-
-        for (const [name, { shortcut, description }] of this.commands.entries()) {
-            const isShortCutDefined = typeof shortcut !== "undefined";
-            console.log(`  ${isShortCutDefined ? `-${shortcut}, ` : ""}--${name}`);
-            console.log(`  ${description}\n`);
-        }
-
-        process.exit(0);
     }
 }
 
