@@ -4,9 +4,9 @@
 ![V1.0](https://img.shields.io/badge/version-0.2.0-blue.svg)
 ![0DEP](https://img.shields.io/badge/Dependencies-0-yellow.svg)
 
-Fast, Secure and light Command Line Argument parser for Node.js ! ArgParser was designed to be embedded in a SlimIO agent, most popular library was not matching our expectation of a light and secure Arg parser.
+**Secure** and **reliable** Command Line Argument parser for **Node.js** ! ArgParser was designed to be embedded in a SlimIO agent, most popular library was not matching our expectation (and security needs).
 
-It does not aim to replace popular CLI lib like `yargs` or `commander`. Please, do not use this package if you do not know what you are doing.
+It does not aim to replace (or to be) popular CLI lib like `yargs` or `commander`. Please, do not use this package if you do not know what you are doing.
 
 > Warning: The API doesn't aim to be "runtime" safe.
 
