@@ -8,9 +8,10 @@ declare namespace ArgParser {
         shortcut?: string;
         defaultVal?: number | string | boolean | any[];
     }
+    export type ArgvResult<T> = Map<keyof T, T[keyof T]>;
 
     export function argDefinition(cmd: string, description?: string): Command;
-    export function parseArg(argDefinitions?: Command[], argv?: string[]): Map<string, any>;
+    export function parseArg<T>(argDefinitions?: Command[], argv?: string[]): ArgvResult<T>;
 }
 
 export as namespace ArgParser;
