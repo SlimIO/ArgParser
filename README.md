@@ -33,7 +33,6 @@ $ yarn add @slimio/arg-parser
 
 Create the following javascript script:
 ```js
-const { strictEqual } = require("assert");
 const ArgParser = require("@slimio/arg-parser");
 
 const argv = new ArgParser("v1.0.0")
