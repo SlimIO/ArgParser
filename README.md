@@ -14,7 +14,7 @@ It does not aim to replace (or to be) popular CLI lib like `yargs` or `commander
 
 - Secure with 0 external dependencies.
 - Only ship feature required for SlimIO.
-- Light and fast !
+- Light, simple and fast!
 
 ## Getting Started
 
@@ -82,3 +82,22 @@ Feel free to redefine the wrapper as you want !
 
 ### parseArg(argDefinitions: Command[], argv?: string[]): Map< string, any >
 Parse Argv (or any input array).
+
+## Benchmark
+See `benchmark/index.js`. This benchmark was not created to serve as a performance comparison with other packages.
+
+```
+Testing argDefinition_t1 on 1,000 iteration!
+argDefinition_t1: 1.782ms
+
+
+Testing argDefinition_t2 on 1,000 iteration!
+argDefinition_t2: 1.639ms
+
+
+Testing parsing_v1 on 1,000 iteration!
+parsing_v1: 4.743ms
+```
+
+## Licence
+MIT
