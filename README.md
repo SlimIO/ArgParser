@@ -80,8 +80,17 @@ interface Command {
 ```
 Feel free to redefine the wrapper as you want !
 
-### parseArg(argDefinitions: Command[], argv?: string[]): Map< string, any >
-Parse Argv (or any input array).
+### parseArg< T >(argDefinitions: Command[], argv?: string[]): Map< keyof T, T[keyof T] >
+Parse Argv (or any input `string[]`). Return a ECMAScript6 Map Object.
+
+```js
+const { parseArg, argDefinition } = require("@slimio/arg-parser");
+
+const argv = parseArg([
+    argDefinition("--level [number=1]")
+], ["--level", "10"]);
+console.log(argv.get("level"));
+```
 
 ## Benchmark
 See `benchmark/index.js`. This benchmark was not created to serve as a performance comparison with other packages.
