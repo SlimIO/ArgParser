@@ -65,23 +65,8 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
         throw new TypeError("argv must be an array");
     }
 
-    // Hydrate commands and shortcuts
-    const commands = new Map();
-    const shortcuts = new Map();
+    const shortcuts = new Map(argDefinitions.map((cmd) => [cmd.shortcut, cmd.name]));
     const parsedArg = new Map();
-    for (const def of argDefinitions) {
-        commands.set(def.name, def);
-        if (typeof def.shortcut === "string") {
-            shortcuts.set(def.shortcut, def.name);
-        }
-    }
-
-    const E_TYPES = new Map([
-        ["number", (val) => Number.isNaN(Number(val))],
-        ["string", (val) => typeof val !== "string"],
-        ["array", (val) => !Array.isArray(val)],
-        ["boolean", (val) => typeof val !== "boolean"]
-    ]);
     let currCmd = null;
     let values = [];
 
@@ -102,35 +87,31 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
     }
     writeArgv();
 
-    // STEP 2: Check parsedArg
     const result = new Map();
-    for (const [commandName, values] of parsedArg) {
-        if (!commands.has(commandName)) {
-            continue;
+    for (let id = 0; id < argDefinitions.length; id++) {
+        const { name, type, defaultVal } = argDefinitions[id];
+
+        if (parsedArg.has(name)) {
+            const currValue = parsedArg.get(name);
+            const value = currValue.length === 0 ? defaultVal || true : currValue;
+
+            if (type === "number" && Number.isNaN(Number(value)) ||
+                type === "string" && typeof value !== "string" ||
+                type === "array" && !Array.isArray(value) ||
+                type === "boolean" && typeof value !== "boolean") {
+                throw new Error(`<${name}> CLI argument must be type of ${type}`);
+            }
+            result.set(name, value);
         }
-
-        const { type, defaultVal } = commands.get(commandName);
-        const value = values.length === 0 ? defaultVal || true : values;
-
-        if (E_TYPES.get(type)(value)) {
-            throw new Error(`<${commandName}> CLI argument must be type of ${type}`);
+        else {
+            if (typeof defaultVal === "undefined") {
+                continue;
+            }
+            result.set(name, defaultVal);
         }
-        result.set(commandName, value);
-    }
-
-    // STEP 3: Setup default commands values!
-    for (const [name, cmd] of commands.entries()) {
-        if (result.has(name) || typeof cmd.defaultVal === "undefined") {
-            continue;
-        }
-
-        result.set(name, cmd.defaultVal);
     }
 
     return result;
 }
 
-module.exports = {
-    argDefinition,
-    parseArg
-};
+module.exports = { argDefinition, parseArg };
