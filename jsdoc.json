@@ -8,8 +8,7 @@
     "source": {
         "include": [
             "package.json",
-            "index.js",
-            "src/argParser.class.js"
+            "index.js"
         ],
         "exclude": [
             "node_modules",
