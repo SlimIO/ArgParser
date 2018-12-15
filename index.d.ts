@@ -4,7 +4,7 @@ declare namespace ArgParser {
     interface Command {
         name: string;
         type: string;
-        description: string;
+        description?: string;
         shortcut?: string;
         defaultVal?: number | string | boolean | any[];
     }
