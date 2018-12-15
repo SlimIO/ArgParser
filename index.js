@@ -92,7 +92,7 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
     }
 
     for (const arg of argv) {
-        if (/^-{1,2}/g.test(arg)) {
+        if (/^-{1,2}/.test(arg)) {
             currCmd !== null && writeArgv();
             currCmd = arg.replace(/-/g, "");
         }
