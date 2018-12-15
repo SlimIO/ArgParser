@@ -3,7 +3,7 @@ const ava = require("ava");
 const is = require("@slimio/is");
 
 // Require Internal Dependencies
-const ArgParser = require("../src/argParser.class");
+const ArgParser = require("..");
 
 ava("assert exported functions", (assert) => {
     assert.true(is.plainObject(ArgParser));
