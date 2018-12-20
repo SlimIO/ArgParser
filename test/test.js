@@ -12,10 +12,9 @@ ava("assert exported functions", (assert) => {
 });
 
 ava("argDefinition: should throw 'Unable to parse command'", (assert) => {
-    const err = assert.throws(() => {
+    assert.throws(() => {
         ArgParser.argDefinition("zabllla");
-    }, Error);
-    assert.is(err.message, "Unable to parse command");
+    }, { instanceOf: Error, message: "Unable to parse command" });
 });
 
 ava("argDefinition: assert new entry", (assert) => {
@@ -39,10 +38,9 @@ ava("argDefinition: assert new entry without shortcut and description", (assert)
 });
 
 ava("parseArg: should throw 'argv must be an array'", (assert) => {
-    const err = assert.throws(() => {
+    assert.throws(() => {
         ArgParser.parseArg(void 0, 10);
-    }, TypeError);
-    assert.is(err.message, "argv must be an array");
+    }, { instanceOf: TypeError, message: "argv must be an array" });
 });
 
 ava("parseArg: without any commands", (assert) => {
@@ -87,8 +85,7 @@ ava("parse: array command", (assert) => {
 ava("parse: should throw a type error", (assert) => {
     const cmdDef = [ArgParser.argDefinition("--product [number]")];
 
-    const err = assert.throws(() => {
+    assert.throws(() => {
         ArgParser.parseArg(cmdDef, ["--product", "hello"]);
-    }, Error);
-    assert.is(err.message, "<product> CLI argument must be type of number");
+    }, { instanceOf: Error, message: "<product> CLI argument must be type of number" });
 });
