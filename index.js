@@ -15,6 +15,12 @@
 
 // eslint-disable-next-line
 const CMD_REG = /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|array)(=(?<defaultVal>.*))?\])?$/;
+const TYPES = {
+    string: (value) => typeof value !== "string",
+    number: (value) => Number.isNaN(Number(value)),
+    boolean: (value) => typeof value !== "boolean",
+    array: (value) => !Array.isArray(value)
+};
 
 /**
  * @version 0.2.0
@@ -70,22 +76,20 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
     let currCmd = null;
     let values = [];
 
-    function writeArgv() {
-        parsedArg.set(shortcuts.has(currCmd) ? shortcuts.get(currCmd) : currCmd,
-            values.length === 1 ? values[0] : values);
-        values = [];
-    }
-
     for (const arg of argv) {
         if (/^-{1,2}/.test(arg)) {
-            currCmd !== null && writeArgv();
+            if (currCmd !== null) {
+                parsedArg.set(shortcuts.has(currCmd) ? shortcuts.get(currCmd) : currCmd,
+                    values.length === 1 ? values[0] : values);
+                values = [];
+            }
             currCmd = arg.replace(/-/g, "");
         }
         else {
             values.push(arg);
         }
     }
-    writeArgv();
+    parsedArg.set(shortcuts.has(currCmd) ? shortcuts.get(currCmd) : currCmd, values.length === 1 ? values[0] : values);
 
     const result = new Map();
     for (let id = 0; id < argDefinitions.length; id++) {
@@ -95,10 +99,7 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
             const currValue = parsedArg.get(name);
             const value = currValue.length === 0 ? defaultVal || true : currValue;
 
-            if (type === "number" && Number.isNaN(Number(value)) ||
-                type === "string" && typeof value !== "string" ||
-                type === "array" && !Array.isArray(value) ||
-                type === "boolean" && typeof value !== "boolean") {
+            if (TYPES[type](value)) {
                 throw new Error(`<${name}> CLI argument must be type of ${type}`);
             }
             result.set(name, value);

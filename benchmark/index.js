@@ -1,4 +1,5 @@
 const { argDefinition, parseArg } = require("../");
+const Benchmark = require("benchmark");
 
 // [De-]optimize method
 argDefinition("-p --product [number=10]", "Description");
@@ -37,4 +38,11 @@ console.log("\n\nTesting parsing_v1 on 10,000 iteration!");
         parseArg(defs, argv);
     }
     console.timeEnd("parsing_v1");
+
+    console.log("\n");
+    const suite = new Benchmark.Suite();
+    suite
+        .add("parsing", () => parseArg(defs, argv))
+        .on("cycle", (ex) => console.log(String(ex.target)))
+        .run();
 }
