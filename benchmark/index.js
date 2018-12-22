@@ -18,7 +18,7 @@ for (let id = 0; id < 1000; id++) {
 }
 console.timeEnd("argDefinition_t2");
 
-console.log("\n\nTesting parsing_v1 on 1,000 iteration!");
+console.log("\n\nTesting parsing_v1 on 10,000 iteration!");
 {
     const defs = [
         argDefinition("--product [number=10]"),
@@ -33,7 +33,7 @@ console.log("\n\nTesting parsing_v1 on 1,000 iteration!");
     parseArg(defs, argv);
 
     console.time("parsing_v1");
-    for (let id = 0; id < 1000; id++) {
+    for (let id = 0; id < 10000; id++) {
         parseArg(defs, argv);
     }
     console.timeEnd("parsing_v1");
