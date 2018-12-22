@@ -1,5 +1,5 @@
 # ArgParser
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/SlimIO/is/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/SlimIO/ArgParser/commit-activity)
 ![MIT](https://img.shields.io/github/license/mashape/apistatus.svg)
 ![V1.0](https://img.shields.io/badge/version-0.2.1-blue.svg)
 ![0DEP](https://img.shields.io/badge/Dependencies-0-yellow.svg)
