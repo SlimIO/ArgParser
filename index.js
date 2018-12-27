@@ -96,13 +96,15 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
         const { name, type, defaultVal } = argDefinitions[id];
 
         if (parsedArg.has(name)) {
-            const currValue = parsedArg.get(name);
-            const value = currValue.length === 0 ? defaultVal || true : currValue;
+            let currValue = parsedArg.get(name);
+            if (currValue.length === 0) {
+                currValue = typeof defaultVal === "undefined" ? true : defaultVal;
+            }
 
-            if (TYPES[type](value)) {
+            if (TYPES[type](currValue)) {
                 throw new Error(`<${name}> CLI argument must be type of ${type}`);
             }
-            result.set(name, value);
+            result.set(name, type === "number" ? Number(currValue) : currValue);
         }
         else {
             if (typeof defaultVal === "undefined") {
