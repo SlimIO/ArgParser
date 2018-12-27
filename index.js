@@ -44,7 +44,7 @@ function argDefinition(cmd, description = "") {
     let defaultVal = result.groups.defaultVal;
 
     if (type === "boolean" && typeof defaultVal === "undefined") {
-        defaultVal = false;
+        defaultVal = true;
     }
     else if (type === "number" && typeof defaultVal !== "undefined") {
         defaultVal = Number(defaultVal);
@@ -110,7 +110,7 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
             if (typeof defaultVal === "undefined") {
                 continue;
             }
-            result.set(name, defaultVal);
+            result.set(name, type === "boolean" ? false : defaultVal);
         }
     }
 
