@@ -97,6 +97,12 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
 
         if (parsedArg.has(name)) {
             let currValue = parsedArg.get(name);
+
+            if (type === "array" && typeof currValue === "string") {
+                // const x = currValue;
+                currValue = [currValue];
+            }
+
             if (currValue.length === 0) {
                 currValue = typeof defaultVal === "undefined" ? true : defaultVal;
             }

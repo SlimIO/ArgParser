@@ -82,6 +82,16 @@ ava("parse: array command", (assert) => {
     assert.deepEqual(result.get("colors"), colors);
 });
 
+ava("parse: array command with only one element into it", (assert) => {
+    const cmdDef = [ArgParser.argDefinition("-i --ignore [array]")];
+
+    const ignoredFile = "file.txt";
+    const result = ArgParser.parseArg(cmdDef, ["-c", ignoredFile]);
+    assert.true(result.has("colors"));
+
+    assert.deepEqual(result.get("colors"), [ignoredFile]);
+});
+
 ava("parse: should throw a type error", (assert) => {
     const cmdDef = [ArgParser.argDefinition("--product [number]")];
 
