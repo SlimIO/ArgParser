@@ -50,6 +50,9 @@
   "keywords": [
     "SlimIO",
     "ArgParser",
+    "argv",
+    "secure",
+    "reliable",
     "argument",
     "parser"
   ],
