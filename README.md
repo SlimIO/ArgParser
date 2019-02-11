@@ -47,10 +47,10 @@ $ Map { 'colors' => [ 'red', 'blue' ], 'verbose' => true }
 ```
 
 ## API
-<details>
-    <summary>argDefinition(cmd: string, description?: string): Command</summary>
-    <br>
-    Generate a new Command definition. cmd argument is a string pattern that will be matched against the following regex:
+<details><summary>argDefinition(cmd: string, description?: string): Command</summary>
+<br />
+
+Generate a new Command definition. cmd argument is a string pattern that will be matched against the following regex:
 ```js
 /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|array)(=(?<defaultVal>.*))?\])?$/;
 ```
@@ -78,19 +78,19 @@ Feel free to redefine the wrapper as you want !
 </details>
 
 
-<details>
-    <summary>parseArg< T >(argDefinitions: Command[], argv?: string[]): Map< keyof T, T[keyof T] ></summary>
-    <br>
-    Parse Argv (or any input `string[]`). Return a ECMAScript6 Map Object.
+<details><summary>parseArg< T >(argDefinitions: Command[], argv?: string[]): Map< keyof T, T[keyof T] ></summary>
+<br />
 
-    ```js
-    const { parseArg, argDefinition } = require("@slimio/arg-parser");
+Parse Argv (or any input `string[]`). Return a ECMAScript6 Map Object.
 
-    const argv = parseArg([
-        argDefinition("--level [number=1]")
-    ], ["--level", "10"]);
-    console.log(argv.get("level"));
-    ```
+```js
+const { parseArg, argDefinition } = require("@slimio/arg-parser");
+
+const argv = parseArg([
+    argDefinition("--level [number=1]")
+], ["--level", "10"]);
+console.log(argv.get("level"));
+```
 </details>
 
 ## License
