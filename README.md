@@ -51,9 +51,9 @@ $ node yourscript --help
 ```
 
 ## API
-
-### argDefinition(cmd: string, description?: string): Command
-Generate a new Command definition. cmd argument is a string pattern that will be matched against the following regex:
+<details>
+    <summary>argDefinition(cmd: string, description?: string): Command</summary>
+    Generate a new Command definition. cmd argument is a string pattern that will be matched against the following regex:
 ```js
 /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|array)(=(?<defaultVal>.*))?\])?$/;
 ```
@@ -67,7 +67,6 @@ const result = parseArg([
     argDefinition("-a --autoreload [number=500]", "Configuration Autoreload delay in number")
 ]);
 ```
-
 A command is described as follow on TypeScript:
 ```ts
 interface Command {
@@ -79,18 +78,22 @@ interface Command {
 }
 ```
 Feel free to redefine the wrapper as you want !
+</details>
 
-### parseArg< T >(argDefinitions: Command[], argv?: string[]): Map< keyof T, T[keyof T] >
-Parse Argv (or any input `string[]`). Return a ECMAScript6 Map Object.
 
-```js
-const { parseArg, argDefinition } = require("@slimio/arg-parser");
+<details>
+    <summary>parseArg< T >(argDefinitions: Command[], argv?: string[]): Map< keyof T, T[keyof T] ></summary>
+    Parse Argv (or any input `string[]`). Return a ECMAScript6 Map Object.
 
-const argv = parseArg([
-    argDefinition("--level [number=1]")
-], ["--level", "10"]);
-console.log(argv.get("level"));
-```
+    ```js
+    const { parseArg, argDefinition } = require("@slimio/arg-parser");
+
+    const argv = parseArg([
+        argDefinition("--level [number=1]")
+    ], ["--level", "10"]);
+    console.log(argv.get("level"));
+    ```
+</details>
 
 ## Benchmark
 See `benchmark/index.js`. This benchmark was not created to serve as a performance comparison with other packages.
