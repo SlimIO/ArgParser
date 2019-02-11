@@ -43,11 +43,7 @@ console.log(result);
 And then run the following command line:
 ```bash
 $ node yourscript --colors red blue --verbose
-```
-
-For help run:
-```bash
-$ node yourscript --help
+$ Map { 'colors' => [ 'red', 'blue' ], 'verbose' => true }
 ```
 
 ## API
