@@ -97,21 +97,5 @@ Feel free to redefine the wrapper as you want !
     ```
 </details>
 
-## Benchmark
-See `benchmark/index.js`. This benchmark was not created to serve as a performance comparison with other packages.
-
-```
-Testing argDefinition_t1 on 1,000 iteration!
-argDefinition_t1: 1.782ms
-
-
-Testing argDefinition_t2 on 1,000 iteration!
-argDefinition_t2: 1.639ms
-
-
-Testing parsing_v1 on 1,000 iteration!
-parsing_v1: 4.743ms
-```
-
-## Licence
+## License
 MIT
