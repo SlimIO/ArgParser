@@ -11,3 +11,4 @@ CONTRIBUTING.md
 commitlint.config.js
 example/
 benchmark/
+.travis.yml
