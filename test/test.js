@@ -86,10 +86,10 @@ ava("parse: array command with only one element into it", (assert) => {
     const cmdDef = [ArgParser.argDefinition("-i --ignore [array]")];
 
     const ignoredFile = "file.txt";
-    const result = ArgParser.parseArg(cmdDef, ["-c", ignoredFile]);
-    assert.true(result.has("colors"));
+    const result = ArgParser.parseArg(cmdDef, ["-i", ignoredFile]);
+    assert.true(result.has("ignore"));
 
-    assert.deepEqual(result.get("colors"), [ignoredFile]);
+    assert.deepEqual(result.get("ignore"), [ignoredFile]);
 });
 
 ava("parse: should throw a type error", (assert) => {
