@@ -33,8 +33,7 @@
     "prepublish": "pkg-ok",
     "test": "ava --verbose",
     "doc": "jsdoc -c ./jsdoc.json -r -R ./README.md -P ./package.json --verbose",
-    "coverage": "nyc ava",
-    "report": "nyc report --reporter=html",
+    "coverage": "c8 -r=\"html\" npm test",
     "benchmark": "node benchmark/index.js"
   },
   "nyc": {
