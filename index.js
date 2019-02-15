@@ -123,4 +123,62 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
     return result;
 }
 
-module.exports = { argDefinition, parseArg };
+/** 
+ * @version 0.2.4
+ *
+ * @method help
+ * @desc Display commands
+ * @memberof ArgParser#
+ * @param {Command[]} [argDefinitions] arguments definitions
+ * 
+ * @return {void}
+ */
+function help(argDefinitions = []) {
+    if (argDefinitions.length === 0) {
+        console.log("There is currently no command repertoried");
+
+        return;
+    }
+
+    console.log();
+    console.log("Usage :");
+    console.log("\t- node file.js <command>");
+    console.log("\t- node file.js <command> <value>");
+    console.log();
+
+    function isLonger(longest, checked) {
+        if (longest < checked.length) {
+            return checked.length;
+        }
+
+        return longest;
+    }
+
+    function display(str, longest) {
+        return `${str}${" ".repeat(longest - str.length)}`;
+    }
+
+    let longestName = "<command>".length;
+    let longestType = "<type>".length;
+    let longestVal = "<default>".length;
+    for (const { name, shortcut, type, description, defaultVal } of argDefinitions) {
+        longestName = isLonger(longestName, `${shortcut ? `-${shortcut} ` : ""}--${name}`);
+        longestType = isLonger(longestType, type);
+        longestVal = isLonger(longestVal, String(defaultVal));
+    }
+
+    const titleCmd = display("<command>", longestName);
+    const titleType = display("<type>", longestType);
+    const titleVal = display("<default>", longestVal);
+    console.log(`${titleCmd}  ${titleType}  ${titleVal}  <description>`);
+
+    for (const { name, shortcut, type, description, defaultVal } of argDefinitions) {
+        const displayCmd = display(`${shortcut ? `-${shortcut} ` : ""}--${name}`, longestName);
+        const displayType = display(type, longestType);
+        const displayVal = display(defaultVal ? String(defaultVal) : "", longestVal);
+
+        console.log(`${displayCmd}  ${displayType}  ${displayVal}  ${description}`);
+    }
+}
+
+module.exports = { argDefinition, parseArg, help };
