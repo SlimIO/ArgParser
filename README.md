@@ -94,5 +94,35 @@ console.log(argv.get("level"));
 ```
 </details>
 
+<details><summary>help(argDefinitions: Command[]): void</summary>
+<br />
+
+Display all commands information
+
+```js
+const cmdDef = [
+    ArgParser.argDefinition("-p --product [number=10]", "Product number description"),
+    ArgParser.argDefinition("-t --truc [string]"),
+    ArgParser.argDefinition("--bidule")
+];
+
+ArgParser.help(cmdDef);
+
+// output ->
+// Usage :
+//     - node file.js <command>
+//     - node file.js <command> <value>
+//
+// <command>     <type>   <default>  <description>
+// -p --product  number   10         Product number description
+// -t --truc     string              
+// --bidule      boolean  true       
+```
+
+
+```js
+```
+</details>
+
 ## License
 MIT
