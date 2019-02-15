@@ -1,3 +1,6 @@
+// Require Node Dependencies
+const { spawn } = require("child_process");
+
 // Require Third-party Dependenties
 const ava = require("ava");
 const is = require("@slimio/is");
@@ -98,4 +101,50 @@ ava("parse: should throw a type error", (assert) => {
     assert.throws(() => {
         ArgParser.parseArg(cmdDef, ["--product", "hello"]);
     }, { instanceOf: Error, message: "<product> CLI argument must be type of number" });
+});
+
+ava("help: There is currently no command repertoried", async(assert) => {
+    const help = spawn("node", ["test/spawn/help.js"]);
+
+    await new Promise((resolve, reject) => {
+        let fullLog = "";
+        help.stdout.on("data", (data) => {
+            fullLog += data.toString("utf-8");
+        });
+
+        help.on("error", reject);
+
+        help.on("close", () => {
+            assert.is(fullLog, "There is currently no command repertoried\n");
+            resolve();
+        });
+    });
+});
+
+ava("help: with commands", async(assert) => {
+    const help = spawn("node", ["test/spawn/help2.js"]);
+
+    await new Promise((resolve, reject) => {
+        let fullLog = "";
+        help.stdout.on("data", (data) => {
+            fullLog += data.toString("utf-8");
+        });
+
+        help.on("error", reject);
+
+        help.on("close", () => {
+            let expected = "\n";
+            expected += "Usage :\n";
+            expected += "\t- node file.js <command>\n";
+            expected += "\t- node file.js <command> <value>\n";
+            expected += "\n";
+            expected += "<command>     <type>   <default>  <description>\n";
+            expected += "-p --product  number   10         Product number description\n";
+            expected += "-t --truc     string              \n";
+            expected += "--bidule      boolean  true       \n";
+
+            assert.is(fullLog, expected);
+            resolve();
+        });
+    });
 });

@@ -13,6 +13,12 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
+  "ava": {
+    "files": [
+      "test/**/*.js",
+      "!test/spawn/**.js"
+    ]
+  },
   "devDependencies": {
     "@commitlint/cli": "^7.5.1",
     "@commitlint/config-conventional": "^7.5.0",
