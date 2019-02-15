@@ -13,6 +13,7 @@ declare namespace ArgParser {
 
     export function argDefinition(cmd: string, description?: string): ArgParser.Command;
     export function parseArg<T>(argDefinitions?: ArgParser.Command[], argv?: string[]): ArgParser.ArgvResult<T>;
+    export function help(argDefinitions?: ArgParser.Command[]): void;
 }
 
 export as namespace ArgParser;
