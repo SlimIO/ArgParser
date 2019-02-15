@@ -25,7 +25,7 @@
     "@escommunity/minami": "^1.0.0",
     "@slimio/eslint-config": "^2.0.3",
     "@slimio/is": "^1.4.0",
-    "@types/node": "^11.9.0",
+    "@types/node": "^11.9.4",
     "ava": "^1.2.1",
     "benchmark": "^2.1.4",
     "c8": "^3.4.0",
