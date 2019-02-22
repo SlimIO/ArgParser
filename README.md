@@ -9,13 +9,16 @@
 
 It does not aim to replace (or to be) popular CLI lib like `yargs` or `commander`. Please, do not use this package if you do not know what you are doing.
 
-> Warning: The API doesn't aim to be "runtime" safe.
-
 ## Why
 
 - Secure with 0 external dependencies.
 - Only ship feature required for SlimIO.
-- Light, simple and fast!
+- Use and return modern collection (Map over Object).
+
+## Non-goals
+
+- Performance over maintainability and readability.
+- Features over security.
 
 ## Getting Started
 
@@ -115,8 +118,8 @@ ArgParser.help(cmdDef);
 //
 // <command>     <type>   <default>  <description>
 // -p --product  number   10         Product number description
-// -t --truc     string              
-// --bidule      boolean  true       
+// -t --truc     string
+// --bidule      boolean  true
 ```
 
 
