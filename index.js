@@ -112,11 +112,8 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
             }
             result.set(name, type === "number" ? Number(currValue) : currValue);
         }
-        else {
-            if (typeof defaultVal === "undefined") {
-                continue;
-            }
-            result.set(name, type === "boolean" ? false : defaultVal);
+        else if (type === "boolean") {
+            result.set(name, false);
         }
     }
 

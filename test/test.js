@@ -103,6 +103,26 @@ ava("parse: should throw a type error", (assert) => {
     }, { instanceOf: Error, message: "<product> CLI argument must be type of number" });
 });
 
+ava("parse: string/number defaultVal shouldn't appear if not called", (assert) => {
+    const cmdDef = [
+        ArgParser.argDefinition("--product [string=slimio]"),
+        ArgParser.argDefinition("--price [number=1000000000]")
+    ];
+
+    let result = ArgParser.parseArg(cmdDef, ["--product"]);
+    assert.true(result.has("product"));
+    assert.false(result.has("price"));
+    assert.is(result.get("product"), "slimio");
+
+    result = ArgParser.parseArg(cmdDef, ["--price"]);
+    assert.false(result.has("product"));
+    assert.true(result.has("price"));
+    assert.is(result.get("price"), 1000000000);
+
+    result = ArgParser.parseArg(cmdDef, []);
+    assert.is(result.size, 0);
+});
+
 ava("help: There is currently no command repertoried", async(assert) => {
     const help = spawn("node", ["test/spawn/help.js"]);
 
