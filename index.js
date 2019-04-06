@@ -14,7 +14,7 @@
  */
 
 // eslint-disable-next-line
-const CMD_REG = /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|array)(=(?<defaultVal>.*))?\])?$/;
+const CMD_REG = /^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|boolean|array)(=(?<defaultVal>.*))?\])?$/;
 const TYPES = {
     string: (value) => typeof value !== "string",
     number: (value) => Number.isNaN(Number(value)),
@@ -172,7 +172,14 @@ function help(argDefinitions = []) {
     for (const { name, shortcut, type, description, defaultVal } of argDefinitions) {
         const displayCmd = display(`${shortcut ? `-${shortcut} ` : ""}--${name}`, longestName);
         const displayType = display(type, longestType);
-        const displayVal = display(defaultVal ? String(defaultVal) : "", longestVal);
+
+        let displayVal;
+        if (type === "boolean") {
+            displayVal = display(defaultVal === true ? "false" : "true", longestVal);
+        }
+        else {
+            displayVal = display(defaultVal ? String(defaultVal) : "", longestVal);
+        }
 
         console.log(`${displayCmd}  ${displayType}  ${displayVal}  ${description}`);
     }

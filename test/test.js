@@ -161,7 +161,8 @@ ava("help: with commands", async(assert) => {
             expected += "<command>     <type>   <default>  <description>\n";
             expected += "-p --product  number   10         Product number description\n";
             expected += "-t --truc     string              \n";
-            expected += "--bidule      boolean  true       \n";
+            expected += "--bidule      boolean  false      \n";
+            expected += "--chouette    boolean  true       \n";
 
             assert.is(fullLog, expected);
             resolve();

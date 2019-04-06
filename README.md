@@ -56,7 +56,7 @@ $ Map { 'colors' => [ 'red', 'blue' ], 'verbose' => true }
 
 Generate a new Command definition. cmd argument is a string pattern that will be matched against the following regex:
 ```js
-/^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|array)(=(?<defaultVal>.*))?\])?$/;
+/^(-{1}(?<shortcut>[a-z]){1})?\s?(-{2}(?<name>[a-z]+)){1}\s?(\[(?<type>number|string|boolean|array)(=(?<defaultVal>.*))?\])?$/;
 ```
 
 Take a look at the root directory `example` for more examples of how to use addCommand !
