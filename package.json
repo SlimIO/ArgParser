@@ -1,6 +1,6 @@
 {
   "name": "@slimio/arg-parser",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "SlimIO argument parser",
   "main": "index.js",
   "engines": {
