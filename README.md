@@ -9,6 +9,9 @@
 
 It does not aim to replace (or to be) popular CLI lib like `yargs` or `commander`. Please, do not use this package if you do not know what you are doing.
 
+## Requirements
+- Node.js v10 or higher
+
 ## Why
 
 - Secure with 0 external dependencies.
