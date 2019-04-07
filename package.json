@@ -34,7 +34,7 @@
     "pkg-ok": "^2.3.1"
   },
   "scripts": {
-    "prepublish": "pkg-ok",
+    "prepublishOnly": "pkg-ok",
     "test": "ava --verbose",
     "doc": "jsdoc -c ./jsdoc.json -r -R ./README.md -P ./package.json --verbose",
     "coverage": "c8 -r=\"html\" npm test",
