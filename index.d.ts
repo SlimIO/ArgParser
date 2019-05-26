@@ -1,5 +1,3 @@
-/// <reference types="node" />
-
 declare namespace ArgParser {
     export interface Command {
         name: string;
