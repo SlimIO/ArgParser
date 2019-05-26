@@ -120,14 +120,14 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
     return result;
 }
 
-/** 
+/**
  * @version 0.2.4
  *
  * @method help
  * @desc Display commands
  * @memberof ArgParser#
  * @param {Command[]} [argDefinitions] arguments definitions
- * 
+ *
  * @return {void}
  */
 function help(argDefinitions = []) {
