@@ -33,6 +33,17 @@ const TYPES = {
  * @returns {Command}
  *
  * @throws {Error}
+ *
+ * @example
+ * const { argDefinition } = require("@slimio/arg-parser");
+ *
+ * const argDefs = [
+ *    // Verbose is a boolean by default
+ *    argDefinition("--verbose", "Enable verbose mode!"),
+ *
+ *    // -a is a shortcut, autoreload is a number with a default value of "500".
+ *    argDefinition("-a --autoreload [number=500]", "Configuration Autoreload delay in number")
+ * ];
  */
 function argDefinition(cmd, description = "") {
     const result = CMD_REG.exec(cmd);
@@ -65,6 +76,15 @@ function argDefinition(cmd, description = "") {
  *
  * @throws {TypeError}
  * @throws {Error}
+ *
+ * @example
+ * const { parseArg, argDefinition } = require("@slimio/arg-parser");
+ *
+ * const argv = parseArg([
+ *    argDefinition("--verbose", "Enable verbose mode!"),
+ *    argDefinition("-a --autoreload [number=500]", "Configuration Autoreload delay in number")
+ * ]);
+ * console.log(argv);
  */
 function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
     if (!Array.isArray(argv)) {
@@ -129,6 +149,14 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
  * @param {Command[]} [argDefinitions] arguments definitions
  *
  * @return {void}
+ *
+ * @example
+ * const { help } = require("@slimio/arg-parser");
+ *
+ * const argDefs = [
+ *    // Your args defs here...
+ * ];
+ * help(argDefs); // it will stdout help on given arguments definitions
  */
 function help(argDefinitions = []) {
     if (argDefinitions.length === 0) {
