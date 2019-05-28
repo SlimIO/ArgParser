@@ -28,8 +28,8 @@ const TYPES = {
  * @method argDefinition
  * @desc Adds a command to the command list. All command that will not be in this list will be ignored.
  * @memberof ArgParser#
- * @param {!String} cmd name of command
- * @param {String} [description] command description
+ * @param {!String} cmd command definition as string (must follow the Regex).
+ * @param {String} [description=""] command description
  * @returns {Command}
  *
  * @throws {Error}
@@ -70,7 +70,7 @@ function argDefinition(cmd, description = "") {
  * @method parseArg
  * @desc Parse and verify if arguments passed in command line are correct commands.
  * @memberof ArgParser#
- * @param {Command[]} [argDefinitions] arguments definitions
+ * @param {Command[]} [argDefinitions=[]] arguments definitions
  * @param {String[]} [argv] list of command and argument of command inputted
  * @returns {Map<String, (ArgValueType | ArgValueType[])>} result
  *
@@ -146,7 +146,7 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
  * @method help
  * @desc Display commands
  * @memberof ArgParser#
- * @param {Command[]} [argDefinitions] arguments definitions
+ * @param {Command[]} [argDefinitions=[]] arguments definitions
  *
  * @return {void}
  *
