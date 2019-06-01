@@ -26,7 +26,7 @@
     "@slimio/eslint-config": "^2.0.4",
     "@slimio/is": "^1.5.0",
     "@slimio/psp": "^0.4.0",
-    "ava": "^1.4.0",
+    "ava": "^2.0.0",
     "benchmark": "^2.1.4",
     "c8": "^4.0.0",
     "cross-env": "^5.2.0",
