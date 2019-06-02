@@ -99,6 +99,11 @@ const argv = parseArg([
 ], ["--level", "10"]);
 console.log(argv.get("level"));
 ```
+
+Under the hood we use TypeScript with the following type
+```ts
+export type ArgvResult<T> = Map<keyof T, T[keyof T]>;
+```
 </details>
 
 <details><summary>help(argDefinitions: Command[]): void</summary>
@@ -124,10 +129,6 @@ ArgParser.help(cmdDef);
 // -p --product  number   10         Product number description
 // -t --truc     string
 // --bidule      boolean  true
-```
-
-
-```js
 ```
 </details>
 
