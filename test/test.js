@@ -85,6 +85,23 @@ ava("parse: array command", (assert) => {
     assert.deepEqual(result.get("colors"), colors);
 });
 
+ava("parse: array command with defaultVal []", (assert) => {
+    {
+        const cmdDef = [ArgParser.argDefinition("-c --colors [array=[]]")];
+
+        const result = ArgParser.parseArg(cmdDef, ["-c"]);
+        assert.true(result.has("colors"));
+        assert.deepEqual(result.get("colors"), []);
+    }
+    {
+        const cmdDef = [ArgParser.argDefinition("-c --colors [array=[\"test\"]]")];
+
+        const result = ArgParser.parseArg(cmdDef, ["-c"]);
+        assert.true(result.has("colors"));
+        assert.deepEqual(result.get("colors"), ["test"]);
+    }
+});
+
 ava("parse: array command with only one element into it", (assert) => {
     const cmdDef = [ArgParser.argDefinition("-i --ignore [array]")];
 
