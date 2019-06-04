@@ -60,6 +60,9 @@ function argDefinition(cmd, description = "") {
     else if (type === "number" && typeof defaultVal !== "undefined") {
         defaultVal = Number(defaultVal);
     }
+    else if (type === "array" && typeof defaultVal === "string") {
+        defaultVal = JSON.parse(defaultVal);
+    }
 
     return { name, shortcut, type, description, defaultVal };
 }
