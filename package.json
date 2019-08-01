@@ -55,6 +55,12 @@
     "argument",
     "parser"
   ],
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "example/*.js",
+    "benchmark/index.js"
+  ],
   "author": "SlimIO",
   "license": "MIT",
   "bugs": {
