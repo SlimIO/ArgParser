@@ -1,3 +1,5 @@
+"use strict";
+
 const { parseArg, argDefinition } = require("../");
 
 const result = parseArg([

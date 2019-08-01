@@ -1,15 +1,17 @@
+"use strict";
+
 /**
  * @namespace ArgParser
  */
 
-/** @typedef {(Number|String|Boolean)} ArgValueType */
+/** @typedef {(number|string|boolean)} ArgValueType */
 
 /**
- * @typedef {Object} Command
- * @property {String} name
- * @property {String} type
- * @property {String} shortcut
- * @property {String} description
+ * @typedef {object} Command
+ * @property {string} name
+ * @property {string} type
+ * @property {string} shortcut
+ * @property {string} description
  * @property {*} defaultVal
  */
 
@@ -25,11 +27,11 @@ const TYPES = {
 /**
  * @version 0.2.0
  *
- * @method argDefinition
- * @desc Adds a command to the command list. All command that will not be in this list will be ignored.
+ * @function argDefinition
+ * @description Adds a command to the command list. All command that will not be in this list will be ignored.
  * @memberof ArgParser#
- * @param {!String} cmd command definition as string (must follow the Regex).
- * @param {String} [description=""] command description
+ * @param {!string} cmd command definition as string (must follow the Regex).
+ * @param {string} [description=""] command description
  * @returns {Command}
  *
  * @throws {Error}
@@ -70,12 +72,12 @@ function argDefinition(cmd, description = "") {
 /**
  * @version 0.2.0
  *
- * @method parseArg
- * @desc Parse and verify if arguments passed in command line are correct commands.
+ * @function parseArg
+ * @description Parse and verify if arguments passed in command line are correct commands.
  * @memberof ArgParser#
  * @param {Command[]} [argDefinitions=[]] arguments definitions
- * @param {String[]} [argv] list of command and argument of command inputted
- * @returns {Map<String, (ArgValueType | ArgValueType[])>} result
+ * @param {string[]} [argv] list of command and argument of command inputted
+ * @returns {Map<string, (ArgValueType | ArgValueType[])>} result
  *
  * @throws {TypeError}
  * @throws {Error}
@@ -146,12 +148,12 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
 /**
  * @version 0.2.4
  *
- * @method help
- * @desc Display commands
+ * @function help
+ * @description Display commands
  * @memberof ArgParser#
  * @param {Command[]} [argDefinitions=[]] arguments definitions
  *
- * @return {void}
+ * @returns {void}
  *
  * @example
  * const { help } = require("@slimio/arg-parser");
@@ -173,7 +175,12 @@ function help(argDefinitions = []) {
     console.log("\t- node file.js <command>");
     console.log("\t- node file.js <command> <value>");
     console.log();
-
+    /**
+     * @function isLonger
+     * @param {!number} longest number
+     * @param {!number} checked number
+     * @returns {number}
+     */
     function isLonger(longest, checked) {
         if (longest < checked.length) {
             return checked.length;
@@ -181,7 +188,12 @@ function help(argDefinitions = []) {
 
         return longest;
     }
-
+    /**
+     * @function display
+     * @param {!string} str
+     * @param {!number} longest
+     * @returns {!string}
+     */
     function display(str, longest) {
         return `${str}${" ".repeat(longest - str.length)}`;
     }

@@ -1,3 +1,5 @@
+"use strict";
+
 const { argDefinition, parseArg } = require("../");
 const Benchmark = require("benchmark");
 

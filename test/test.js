@@ -1,3 +1,5 @@
+"use strict";
+
 // Require Node Dependencies
 const { spawn } = require("child_process");
 

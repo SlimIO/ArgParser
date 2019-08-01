@@ -1,9 +1,11 @@
+"use strict";
+
 const { parseArg, argDefinition } = require("../");
 
 /**
- * @typedef {Object} Argv
- * @property {Boolean} verbose
- * @property {Number} autoreload
+ * @typedef {object} Argv
+ * @property {boolean} verbose
+ * @property {number} autoreload
  */
 
 /** @type {!ArgParser.ArgvResult<Argv>} */

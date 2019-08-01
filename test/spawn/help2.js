@@ -1,3 +1,5 @@
+"use strict";
+
 const ArgParser = require("../../index.js");
 
 const cmdDef = [
