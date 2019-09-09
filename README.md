@@ -4,10 +4,11 @@
 ![MIT](https://img.shields.io/github/license/mashape/apistatus.svg)
 ![0DEP](https://img.shields.io/david/SlimIO/Arg-Parser.svg)
 ![size](https://img.shields.io/bundlephobia/min/@slimio/arg-parser.svg)
-[![Build Status](https://travis-ci.com/SlimIO/ArgParser.svg?branch=master)](https://travis-ci.com/SlimIO/ArgParser) [![Greenkeeper badge](https://badges.greenkeeper.io/SlimIO/ArgParser.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.com/SlimIO/ArgParser.svg?branch=master)](https://travis-ci.com/SlimIO/ArgParser)
+[![Greenkeeper badge](https://badges.greenkeeper.io/SlimIO/ArgParser.svg)](https://greenkeeper.io/)
 
 <p align="center">
-    <img src="https://i.imgur.com/ArwF90x.png" />
+    <img src="https://i.imgur.com/lyT9BCA.png" />
 </p>
 
 **Secure** and **reliable** Command Line Argument parser for **Node.js** ! ArgParser was designed to be embedded in a SlimIO agent, most popular library was not matching our expectation (and security needs).
@@ -59,6 +60,8 @@ And then run the following command line:
 $ node yourscript --colors red blue --verbose
 $ Map { 'colors' => [ 'red', 'blue' ], 'verbose' => true }
 ```
+
+> 👀 More examples can be found [here](https://github.com/SlimIO/Arg-parser/tree/master/example)
 
 ## API
 <details><summary>argDefinition(cmd: string, description?: string): Command</summary>
