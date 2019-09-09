@@ -6,9 +6,15 @@
 ![size](https://img.shields.io/bundlephobia/min/@slimio/arg-parser.svg)
 [![Build Status](https://travis-ci.com/SlimIO/ArgParser.svg?branch=master)](https://travis-ci.com/SlimIO/ArgParser) [![Greenkeeper badge](https://badges.greenkeeper.io/SlimIO/ArgParser.svg)](https://greenkeeper.io/)
 
+<p align="center">
+    <img src="https://i.imgur.com/ArwF90x.png" />
+</p>
+
 **Secure** and **reliable** Command Line Argument parser for **Node.js** ! ArgParser was designed to be embedded in a SlimIO agent, most popular library was not matching our expectation (and security needs).
 
 It does not aim to replace (or to be) popular CLI lib like `yargs` or `commander`. Please, do not use this package if you do not know what you are doing.
+
+> 👀 If you do not know what are **script arguments**, please check the [Node.js documentation](https://nodejs.org/docs/latest/api/process.html#process_process_argv).
 
 ## Requirements
 - [Node.js](https://nodejs.org/en/) v10 or higher
