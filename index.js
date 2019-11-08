@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * @namespace ArgParser
  */
@@ -47,7 +45,7 @@ const TYPES = {
  *    argDefinition("-a --autoreload [number=500]", "Configuration Autoreload delay in number")
  * ];
  */
-function argDefinition(cmd, description = "") {
+export function argDefinition(cmd, description = "") {
     const result = CMD_REG.exec(cmd);
     if (result === null) {
         throw new Error("Unable to parse command");
@@ -91,7 +89,7 @@ function argDefinition(cmd, description = "") {
  * ]);
  * console.log(argv);
  */
-function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
+export function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
     if (!Array.isArray(argv)) {
         throw new TypeError("argv must be an array");
     }
@@ -163,7 +161,7 @@ function parseArg(argDefinitions = [], argv = process.argv.slice(2)) {
  * ];
  * help(argDefs); // it will stdout help on given arguments definitions
  */
-function help(argDefinitions = []) {
+export function help(argDefinitions = []) {
     if (argDefinitions.length === 0) {
         console.log("There is currently no command repertoried");
 
@@ -227,5 +225,3 @@ function help(argDefinitions = []) {
         console.log(`${displayCmd}  ${displayType}  ${displayVal}  ${description}`);
     }
 }
-
-module.exports = { argDefinition, parseArg, help };

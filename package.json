@@ -3,6 +3,7 @@
   "version": "0.3.2",
   "description": "SlimIO argument parser",
   "main": "index.js",
+  "type": "module",
   "engines": {
     "node": ">=10"
   },
@@ -14,6 +15,9 @@
     }
   },
   "ava": {
+    "require": [
+      "esm"
+    ],
     "files": [
       "test/**/*.js",
       "!test/spawn/**.js"
@@ -27,10 +31,12 @@
     "@slimio/is": "^1.5.0",
     "@slimio/psp": "^0.8.0",
     "ava": "^2.0.0",
+    "babel-eslint": "^10.0.3",
     "benchmark": "^2.1.4",
     "c8": "^6.0.1",
     "cross-env": "^6.0.3",
     "eslint": "^6.1.0",
+    "esm": "^3.2.25",
     "husky": "^3.0.2",
     "jsdoc": "^3.6.2",
     "pkg-ok": "^2.3.1"

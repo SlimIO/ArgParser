@@ -1,6 +1,4 @@
-"use strict";
-
-const ArgParser = require("../../index.js");
+import * as ArgParser from "../../index.js";
 
 const cmdDef = [
     ArgParser.argDefinition("-p --product [number=10]", "Product number description"),

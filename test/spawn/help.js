@@ -1,5 +1,2 @@
-"use strict";
-
-const ArgParser = require("../../index.js");
-
-ArgParser.help();
+import { help } from "../../index.js";
+help();

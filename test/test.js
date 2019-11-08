@@ -1,14 +1,12 @@
-"use strict";
-
 // Require Node Dependencies
-const { spawn } = require("child_process");
+import { spawn } from "child_process";
 
 // Require Third-party Dependenties
-const ava = require("ava");
-const is = require("@slimio/is");
+import ava from "ava";
+import is from "@slimio/is";
 
 // Require Internal Dependencies
-const ArgParser = require("..");
+import * as ArgParser from "../index.js";
 
 ava("assert exported functions", (assert) => {
     assert.true(is.plainObject(ArgParser));
@@ -143,48 +141,33 @@ ava("parse: string/number defaultVal shouldn't appear if not called", (assert) =
 });
 
 ava("help: There is currently no command repertoried", async(assert) => {
-    const help = spawn("node", ["test/spawn/help.js"]);
+    const cp = spawn(process.argv[0], ["--experimental-modules", "test/spawn/help.js"]);
 
-    await new Promise((resolve, reject) => {
-        let fullLog = "";
-        help.stdout.on("data", (data) => {
-            fullLog += data.toString("utf-8");
-        });
-
-        help.on("error", reject);
-
-        help.on("close", () => {
-            assert.is(fullLog, "There is currently no command repertoried\n");
-            resolve();
-        });
-    });
+    let raw = "";
+    for await (const data of cp.stdout) {
+        raw += data.toString();
+    }
+    assert.is(raw, "There is currently no command repertoried\n");
 });
 
 ava("help: with commands", async(assert) => {
-    const help = spawn("node", ["test/spawn/help2.js"]);
+    const cp = spawn(process.argv[0], ["--experimental-modules", "test/spawn/help2.js"]);
 
-    await new Promise((resolve, reject) => {
-        let fullLog = "";
-        help.stdout.on("data", (data) => {
-            fullLog += data.toString("utf-8");
-        });
+    let raw = "";
+    for await (const data of cp.stdout) {
+        raw += data.toString();
+    }
 
-        help.on("error", reject);
+    let expected = "\n";
+    expected += "Usage :\n";
+    expected += "\t- node file.js <command>\n";
+    expected += "\t- node file.js <command> <value>\n";
+    expected += "\n";
+    expected += "<command>     <type>   <default>  <description>\n";
+    expected += "-p --product  number   10         Product number description\n";
+    expected += "-t --truc     string              \n";
+    expected += "--bidule      boolean  false      \n";
+    expected += "--chouette    boolean  true       \n";
 
-        help.on("close", () => {
-            let expected = "\n";
-            expected += "Usage :\n";
-            expected += "\t- node file.js <command>\n";
-            expected += "\t- node file.js <command> <value>\n";
-            expected += "\n";
-            expected += "<command>     <type>   <default>  <description>\n";
-            expected += "-p --product  number   10         Product number description\n";
-            expected += "-t --truc     string              \n";
-            expected += "--bidule      boolean  false      \n";
-            expected += "--chouette    boolean  true       \n";
-
-            assert.is(fullLog, expected);
-            resolve();
-        });
-    });
+    assert.is(raw, expected);
 });
