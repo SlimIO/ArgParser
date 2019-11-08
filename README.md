@@ -18,7 +18,7 @@ It does not aim to replace (or to be) popular CLI lib like `yargs` or `commander
 > 👀 If you do not know what are **script arguments**, please check the [Node.js documentation](https://nodejs.org/docs/latest/api/process.html#process_process_argv).
 
 ## Requirements
-- [Node.js](https://nodejs.org/en/) v10 or higher
+- [Node.js](https://nodejs.org/en/) v12 or higher
 
 ## Why
 
