@@ -7,7 +7,9 @@
   "engines": {
     "node": ">=12"
   },
-  "dependencies": {},
+  "dependencies": {
+    "snyk": "^1.316.1"
+  },
   "husky": {
     "hooks": {
       "pre-push": "cross-env eslint index.js && npm test",
@@ -46,7 +48,9 @@
     "test": "cross-env psp && ava --verbose",
     "doc": "jsdoc -c ./jsdoc.json -r -R ./README.md -P ./package.json --verbose",
     "coverage": "c8 -r=\"html\" npm test",
-    "benchmark": "node benchmark/index.js"
+    "benchmark": "node benchmark/index.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -72,5 +76,6 @@
   "bugs": {
     "url": "https://github.com/SlimIO/ArgParser/issues"
   },
-  "homepage": "https://github.com/SlimIO/ArgParser#readme"
+  "homepage": "https://github.com/SlimIO/ArgParser#readme",
+  "snyk": true
 }
