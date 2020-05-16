@@ -6,7 +6,6 @@
 ![size](https://img.shields.io/bundlephobia/min/@slimio/arg-parser.svg)
 ![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/@slimio/arg-parser)
 [![Build Status](https://travis-ci.com/SlimIO/ArgParser.svg?branch=master)](https://travis-ci.com/SlimIO/ArgParser)
-[![Greenkeeper badge](https://badges.greenkeeper.io/SlimIO/ArgParser.svg)](https://greenkeeper.io/)
 
 <p align="center">
     <img src="https://i.imgur.com/lyT9BCA.png" />
