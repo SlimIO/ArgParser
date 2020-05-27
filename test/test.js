@@ -9,9 +9,9 @@ import is from "@slimio/is";
 import * as ArgParser from "../index.js";
 
 ava("assert exported functions", (assert) => {
-    assert.true(is.plainObject(ArgParser));
-    assert.true(Reflect.has(ArgParser, "argDefinition"));
-    assert.true(Reflect.has(ArgParser, "parseArg"));
+    assert.true(is.object(ArgParser), "ArgParser must be an object");
+    assert.true(Reflect.has(ArgParser, "argDefinition"), "must have an argDefinition method");
+    assert.true(Reflect.has(ArgParser, "parseArg"), "must have an parseArg method");
 });
 
 ava("argDefinition: should throw 'Unable to parse command'", (assert) => {
